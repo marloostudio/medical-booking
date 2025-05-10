@@ -1,34 +1,26 @@
-// Firebase client configuration
+// Firebase client configuration - simplified version
 import { initializeApp, getApps, getApp } from "firebase/app"
 import { getAuth } from "firebase/auth"
 import { getFirestore } from "firebase/firestore"
 import { getStorage } from "firebase/storage"
 
-// Check if we're in a browser environment
+// Simple check for browser environment
 const isBrowser = typeof window !== "undefined"
 
+// Create a dummy implementation for server-side
+const dummyFirebase = {
+  app: null,
+  auth: null,
+  db: null,
+  storage: null,
+  isInitialized: false,
+}
+
+// Only initialize Firebase in the browser
+let firebaseInstance = dummyFirebase
+
 // Initialize Firebase only in browser environment
-const initializeFirebase = () => {
-  // Validate required environment variables
-  const requiredVars = [
-    "NEXT_PUBLIC_FIREBASE_API_KEY",
-    "NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN",
-    "NEXT_PUBLIC_FIREBASE_PROJECT_ID",
-  ]
-
-  const missingVars = requiredVars.filter((varName) => !process.env[varName] || process.env[varName] === "undefined")
-
-  if (missingVars.length > 0) {
-    console.error(`Missing required Firebase environment variables: ${missingVars.join(", ")}`)
-    // Return null values if environment variables are missing
-    return {
-      app: null,
-      auth: null,
-      db: null,
-      storage: null,
-    }
-  }
-
+if (isBrowser) {
   try {
     const firebaseConfig = {
       apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -40,31 +32,42 @@ const initializeFirebase = () => {
       measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || "",
     }
 
-    // Initialize Firebase
-    const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig)
-    const auth = getAuth(app)
-    const db = getFirestore(app)
-    const storage = getStorage(app)
+    // Check if any Firebase apps have been initialized
+    if (!getApps().length) {
+      const app = initializeApp(firebaseConfig)
+      const auth = getAuth(app)
+      const db = getFirestore(app)
+      const storage = getStorage(app)
 
-    return { app, auth, db, storage }
+      firebaseInstance = {
+        app,
+        auth,
+        db,
+        storage,
+        isInitialized: true,
+      }
+    } else {
+      const app = getApp()
+      const auth = getAuth(app)
+      const db = getFirestore(app)
+      const storage = getStorage(app)
+
+      firebaseInstance = {
+        app,
+        auth,
+        db,
+        storage,
+        isInitialized: true,
+      }
+    }
   } catch (error) {
     console.error("Error initializing Firebase:", error)
-    // Return null values if initialization fails
-    return {
-      app: null,
-      auth: null,
-      db: null,
-      storage: null,
-    }
+    // Keep the dummy implementation if initialization fails
   }
 }
 
-// Initialize Firebase only in browser environment
-const { app, auth, db, storage } = isBrowser ? initializeFirebase() : { app: null, auth: null, db: null, storage: null }
+// Export the Firebase instance
+export const { app, auth, db, storage } = firebaseInstance
 
 // Helper function to check if Firebase is initialized
-export const isFirebaseInitialized = () => {
-  return !!app && !!auth && !!db && !!storage
-}
-
-export { app, auth, db, storage }
+export const isFirebaseInitialized = () => firebaseInstance.isInitialized

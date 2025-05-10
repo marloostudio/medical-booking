@@ -12,6 +12,11 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  // Dashboard and admin pages have their own layouts
+  const isDashboardOrAdmin = (path: string) => {
+    return path.startsWith("/dashboard") || path.startsWith("/admin")
+  }
+
   return (
     <html lang="en">
       <body>{children}</body>

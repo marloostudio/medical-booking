@@ -15,7 +15,6 @@ type SystemCheckResult = {
   message: string
 }
 
-// Remove useSearchParams and accept tab as a prop
 export function SystemCheckClient({ initialTab = "all" }: { initialTab?: string }) {
   const [results, setResults] = useState<SystemCheckResult[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -49,6 +48,9 @@ export function SystemCheckClient({ initialTab = "all" }: { initialTab?: string 
       // Check API Health
       try {
         const healthResponse = await fetch("/api/health")
+        if (!healthResponse.ok) {
+          throw new Error(`API returned status ${healthResponse.status}`)
+        }
         const healthData = await healthResponse.json()
 
         setResults((prev) => [
@@ -90,6 +92,9 @@ export function SystemCheckClient({ initialTab = "all" }: { initialTab?: string 
       // Check environment variables
       try {
         const envResponse = await fetch("/api/env-check")
+        if (!envResponse.ok) {
+          throw new Error(`API returned status ${envResponse.status}`)
+        }
         const envData = await envResponse.json()
 
         setResults((prev) => [
@@ -106,14 +111,16 @@ export function SystemCheckClient({ initialTab = "all" }: { initialTab?: string 
         // Add detailed env var checks
         if (envData.missingVars) {
           Object.entries(envData.missingVars).forEach(([category, vars]) => {
-            setResults((prev) => [
-              ...prev,
-              {
-                name: `${category} Variables`,
-                status: "warning",
-                message: `Missing: ${(vars as string[]).join(", ")}`,
-              },
-            ])
+            if (Array.isArray(vars) && vars.length > 0) {
+              setResults((prev) => [
+                ...prev,
+                {
+                  name: `${category} Variables`,
+                  status: "warning",
+                  message: `Missing: ${vars.join(", ")}`,
+                },
+              ])
+            }
           })
         }
       } catch (error) {
