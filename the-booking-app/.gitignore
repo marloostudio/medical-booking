@@ -40,10 +40,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-
-
 # Ignore Mac system files
-.DS_Store
 .localized
 
 # Ignore node_modules folder
@@ -53,3 +50,11 @@ node_modules/
 *.log
 *.tmp
 .env
+
+# Ignore directories outside the project
+/Apps/
+/Binder2.pdf
+/Coding/
+/GitHub/
+/Scanned Documents/
+/superwhisper/
