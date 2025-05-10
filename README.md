@@ -1,30 +1,80 @@
-# The Booking Link - Web App 
+# BookingLink - Medical Appointment Platform
 
-*Automatically synced with your [v0.dev](https://v0.dev) deployments*
+BookingLink is a multi-tenant clinic appointment management platform built with Next.js, Firebase, and Stripe. It supports Super Admins, Clinic Owners, and clinic staff (Admins, Medical Staff, Receptionists).
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/marloostudio/v0-medical-booking)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.dev-black?style=for-the-badge)](https://v0.dev/chat/projects/cFbutdET5ga)
+## Features
 
-## Overview
+- Multi-tenant architecture for managing multiple clinics
+- Role-based access control
+- Appointment scheduling and management
+- Patient records management
+- SMS and email notifications
+- Secure authentication with Google and email/password
+- Responsive design for all devices
 
-This repository will stay in sync with your deployed chats on [v0.dev](https://v0.dev).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.dev](https://v0.dev).
+## Tech Stack
+
+- **Framework**: Next.js 13 with App Router
+- **Styling**: TailwindCSS + ShadCN UI
+- **Database**: Firebase Firestore
+- **Authentication**: Firebase Authentication
+- **Notifications**: Twilio (SMS), SendGrid (email)
+- **Payments**: Stripe
+- **Deployment**: Vercel
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 16+
+- npm or yarn
+- Firebase account
+- Twilio account (for SMS)
+- Stripe account (for payments)
+
+### Installation
+
+1. Clone the repository:
+   \`\`\`bash
+   git clone https://github.com/yourusername/bookinglink.git
+   cd bookinglink
+   \`\`\`
+
+2. Install dependencies:
+   \`\`\`bash
+   npm install
+   # or
+   yarn
+   \`\`\`
+
+3. Create a `.env.local` file based on `.env.example` and fill in your environment variables.
+
+4. Run the development server:
+   \`\`\`bash
+   npm run dev
+   # or
+   yarn dev
+   \`\`\`
+
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## Environment Variables
+
+See `.env.example` for required environment variables.
 
 ## Deployment
 
-Your project is live at:
+This project is configured for deployment on Vercel:
 
-**[https://vercel.com/marloostudio/v0-medical-booking](https://vercel.com/marloostudio/v0-medical-booking)**
+1. Push your code to GitHub
+2. Import the project in Vercel
+3. Configure environment variables
+4. Deploy
 
-## Build your app
+## License
 
-Continue building your app on:
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-**[https://v0.dev/chat/projects/cFbutdET5ga](https://v0.dev/chat/projects/cFbutdET5ga)**
+## Version
 
-## How It Works
-
-1. Create and modify your project using [v0.dev](https://v0.dev)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+Current version: V4
