@@ -13,7 +13,7 @@ const nextConfig = {
   },
   // Enable SWC transformations explicitly (no need for swcMinify)
   experimental: {
-    forceSwcTransforms: true,
+    allowedDevOrigins: ["http://192.168.5.172:3000"], // Add your network IP here
   },
   // Add webpack configuration for environment variables
   webpack: (config, { isServer }) => {

@@ -1,39 +1,35 @@
-import type React from "react"
-import type { Metadata } from "next"
-import "./globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
-import { NextAuthProvider } from "@/components/providers/session-provider"
-// Import the function correctly - try both ways
-import validateCriticalEnvVars from "@/lib/env-checker"
-// Alternatively, if the above doesn't work:
-// import { validateCriticalEnvVars } from "@/lib/env-checker"
+// app/layout.tsx
+import "./globals.css";
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
+import { SessionProvider } from "@/components/providers/session-provider";
 
-// Validate critical environment variables
-try {
-  validateCriticalEnvVars()
-} catch (error) {
-  console.error("Environment validation error:", error)
-  // Continue execution - we'll handle missing vars in the components that need them
-}
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "BookingLink - Medical Appointment Booking Platform",
-  description: "Streamline your clinic's appointment scheduling with BookingLink",
-    generator: 'v0.dev'
-}
+  title: "BookingLink - Medical Appointment Management",
+  description:
+    "Streamline your medical practice with our comprehensive appointment management system",
+};
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className="font-sans bg-white">
-        <NextAuthProvider>
-          <ThemeProvider>{children}</ThemeProvider>
-        </NextAuthProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body className={inter.className}>
+        <SessionProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+            <Toaster />
+          </ThemeProvider>
+        </SessionProvider>
       </body>
     </html>
-  )
+  );
 }

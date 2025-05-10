@@ -1,0 +1,46 @@
+{
+  "appVersion" : "1.45.14",
+  "languageModelName" : "",
+  "modeName" : "Default",
+  "systemAudioEnabled" : false,
+  "segments" : [
+    {
+      "end" : 12,
+      "text" : "Draft an email to Michael that we met yesterday at Sahar's property showing and state that",
+      "start" : 0
+    },
+    {
+      "end" : 15,
+      "text" : "it was nice to meet you as per your request.",
+      "start" : 12
+    },
+    {
+      "end" : 22,
+      "text" : "Here's the link to our website, master at that CA.",
+      "start" : 15
+    },
+    {
+      "end" : 33,
+      "text" : "Please let me know how we can help you in any investment and property development needs.",
+      "start" : 22
+    }
+  ],
+  "datetime" : "2025-05-22T14:32:28",
+  "modelName" : "Standard",
+  "modelKey" : "small",
+  "duration" : 34237,
+  "separateSpeakersEnabled" : false,
+  "applicationContextEnabled" : false,
+  "speakers" : [
+
+  ],
+  "recordingDevice" : "BuiltInMicrophoneDevice",
+  "processingTime" : 1275,
+  "rawResult" : " Draft an email to Michael that we met yesterday at Sahar's property showing and state that it was nice to meet you as per your request. Here's the link to our website, master at that CA. Please let me know how we can help you in any investment and property development needs.",
+  "literalPunctuationEnabled" : false,
+  "languageSelected" : "en",
+  "result" : "Draft an email to Michael that we met yesterday at Sahar's property showing and state that it was nice to meet you as per your request. Here's the link to our website, master at that CA. Please let me know how we can help you in any investment and property development needs.",
+  "translationEnabled" : false,
+  "realtimeEnabled" : false,
+  "prompt" : ""
+}

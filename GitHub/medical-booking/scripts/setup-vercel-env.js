@@ -1,50 +1,56 @@
-const fs = require("fs")
-const path = require("path")
+#!/usr/bin/env node
 
-console.log("Setting up environment variables for Vercel deployment...")
+/**
+ * Vercel Environment Setup Script
+ * Validates environment variables for Vercel deployment
+ */
 
-// Function to properly format the Firebase private key for Vercel
-function preparePrivateKeyForVercel() {
-  const privateKey = process.env.FIREBASE_PRIVATE_KEY
+function setupVercelEnv() {
+  console.log("🚀 Validating Vercel environment setup...")
 
-  if (!privateKey) {
-    console.error("FIREBASE_PRIVATE_KEY is not defined in environment variables")
+  const requiredForProduction = [
+    "NEXTAUTH_SECRET",
+    "NEXTAUTH_URL",
+    "FIREBASE_PRIVATE_KEY",
+    "FIREBASE_CLIENT_EMAIL",
+    "GCLOUD_PROJECT",
+    "TWILIO_ACCOUNT_SID",
+    "TWILIO_AUTH_TOKEN",
+    "STRIPE_SECRET_KEY",
+    "ENCRYPTION_KEY",
+  ]
+
+  const requiredForPublic = [
+    "NEXT_PUBLIC_FIREBASE_API_KEY",
+    "NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN",
+    "NEXT_PUBLIC_FIREBASE_PROJECT_ID",
+    "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
+  ]
+
+  console.log("🔍 Checking server-side environment variables...")
+  const missingServer = requiredForProduction.filter((varName) => !process.env[varName])
+
+  console.log("🔍 Checking client-side environment variables...")
+  const missingClient = requiredForPublic.filter((varName) => !process.env[varName])
+
+  if (missingServer.length > 0) {
+    console.error("❌ Missing server-side environment variables:")
+    missingServer.forEach((varName) => console.error(`   - ${varName}`))
+  }
+
+  if (missingClient.length > 0) {
+    console.error("❌ Missing client-side environment variables:")
+    missingClient.forEach((varName) => console.error(`   - ${varName}`))
+  }
+
+  if (missingServer.length > 0 || missingClient.length > 0) {
+    console.error("\n💡 Add these to your Vercel project environment variables")
+    console.error("💡 Or add them to your .env.local for local development")
     process.exit(1)
   }
 
-  // If the key contains literal newlines, replace them with escaped newlines for Vercel
-  if (privateKey.includes("\n")) {
-    return privateKey.replace(/\n/g, "\\n")
-  }
-
-  return privateKey
+  console.log("✅ All required environment variables are present")
+  console.log("🎉 Ready for Vercel deployment!")
 }
 
-// Create a .env.production.local file with properly formatted variables
-function createEnvFile() {
-  try {
-    const envPath = path.join(process.cwd(), ".env.production.local")
-
-    // Format the private key
-    const formattedPrivateKey = preparePrivateKeyForVercel()
-
-    // Create the env file content
-    const envContent = `
-# Firebase Admin (properly formatted for Vercel)
-FIREBASE_PRIVATE_KEY=${formattedPrivateKey}
-
-# Other environment variables remain unchanged
-`
-
-    // Write the file
-    fs.writeFileSync(envPath, envContent, "utf8")
-    console.log(".env.production.local file created successfully with properly formatted private key")
-  } catch (error) {
-    console.error("Error creating .env file:", error)
-    process.exit(1)
-  }
-}
-
-// Run the setup
-createEnvFile()
-console.log("Environment setup complete!")
+setupVercelEnv()

@@ -1,68 +1,47 @@
 #!/usr/bin/env node
 
+/**
+ * Firebase Key Setup Script
+ * Validates and formats Firebase service account credentials
+ */
+
 const fs = require("fs")
 const path = require("path")
 
-console.log("🔧 Setting up Firebase environment for Vercel deployment...")
+function setupFirebaseKey() {
+  console.log("🔑 Setting up Firebase service account...")
 
-try {
-  // Get the Firebase private key from environment
+  const requiredEnvVars = ["FIREBASE_PRIVATE_KEY", "FIREBASE_CLIENT_EMAIL", "GCLOUD_PROJECT"]
+
+  const missing = requiredEnvVars.filter((varName) => !process.env[varName])
+
+  if (missing.length > 0) {
+    console.error("❌ Missing required environment variables:")
+    missing.forEach((varName) => console.error(`   - ${varName}`))
+    console.error("\n💡 Make sure these are set in your .env.local file")
+    process.exit(1)
+  }
+
+  // Validate private key format
   const privateKey = process.env.FIREBASE_PRIVATE_KEY
-
-  if (!privateKey) {
-    console.log("⚠️  No FIREBASE_PRIVATE_KEY found in environment variables")
-    console.log("✅ Continuing with build process...")
-    process.exit(0)
+  if (!privateKey.includes("BEGIN PRIVATE KEY")) {
+    console.error("❌ FIREBASE_PRIVATE_KEY appears to be malformed")
+    console.error("💡 Make sure it includes the full PEM format with headers")
+    process.exit(1)
   }
 
-  // Function to format the private key properly
-  function formatPrivateKey(key) {
-    if (!key) return ""
-
-    // If the key is base64 encoded, decode it first
-    let formattedKey = key
-
-    try {
-      // Check if it's base64 encoded
-      if (!key.includes("-----BEGIN PRIVATE KEY-----")) {
-        formattedKey = Buffer.from(key, "base64").toString("utf8")
-      }
-    } catch (e) {
-      // If decoding fails, use the original key
-      formattedKey = key
-    }
-
-    // Replace escaped newlines with actual newlines
-    formattedKey = formattedKey.replace(/\\n/g, "\n")
-
-    // Ensure proper PEM format
-    if (!formattedKey.includes("-----BEGIN PRIVATE KEY-----")) {
-      console.log("⚠️  Private key does not appear to be in PEM format")
-      return formattedKey
-    }
-
-    return formattedKey
+  // Validate email format
+  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL
+  if (!clientEmail.includes("@") || !clientEmail.includes(".iam.gserviceaccount.com")) {
+    console.error("❌ FIREBASE_CLIENT_EMAIL appears to be malformed")
+    console.error("💡 Should be in format: name@project.iam.gserviceaccount.com")
+    process.exit(1)
   }
 
-  // Format the private key
-  const formattedPrivateKey = formatPrivateKey(privateKey)
-
-  // Create the environment content
-  const envContent = `# Auto-generated Firebase environment for Vercel
-FIREBASE_PRIVATE_KEY="${formattedPrivateKey.replace(/\n/g, "\\n")}"
-FIREBASE_CLIENT_EMAIL="${process.env.FIREBASE_CLIENT_EMAIL || ""}"
-GCLOUD_PROJECT="${process.env.GCLOUD_PROJECT || ""}"
-`
-
-  // Write to .env.production.local
-  const envPath = path.join(process.cwd(), ".env.production.local")
-  fs.writeFileSync(envPath, envContent)
-
-  console.log("✅ Firebase environment setup complete")
-  console.log("📝 Created .env.production.local with formatted Firebase key")
-} catch (error) {
-  console.error("❌ Error setting up Firebase environment:", error.message)
-  console.log("⚠️  Continuing with build process...")
-  // Don't fail the build, just continue
-  process.exit(0)
+  console.log("✅ Firebase service account configuration is valid")
+  console.log(`📧 Client Email: ${clientEmail}`)
+  console.log(`🏗️  Project ID: ${process.env.GCLOUD_PROJECT}`)
+  console.log("🔐 Private key format: OK")
 }
+
+setupFirebaseKey()

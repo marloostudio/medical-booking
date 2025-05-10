@@ -1,7 +1,7 @@
-import { db } from "@/lib/firebase"
+import { db } from "@/lib/firebase-client"
 import { collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, query, where } from "firebase/firestore"
 import { v4 as uuidv4 } from "uuid"
-import { addDays, format } from "date-fns"
+import { addDays, format } from "@/lib/date-utils"
 
 export interface TimeSlot {
   start: number // timestamp in milliseconds

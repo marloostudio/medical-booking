@@ -1,227 +1,116 @@
 "use client"
 
-import { useState } from "react"
-import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
+import { Calendar, Users, Clock, TrendingUp } from "lucide-react"
 
-export default function DashboardContent() {
-  const [date, setDate] = useState<Date | undefined>(new Date())
-
-  // Mock data
-  const upcomingAppointments = [
-    { id: 1, patient: "John Doe", time: "9:00 AM", date: "Today", type: "Check-up", status: "confirmed" },
-    { id: 2, patient: "Jane Smith", time: "11:30 AM", date: "Today", type: "Consultation", status: "confirmed" },
-    { id: 3, patient: "Robert Johnson", time: "2:15 PM", date: "Tomorrow", type: "Follow-up", status: "pending" },
-  ]
-
-  const recentPatients = [
-    { id: 1, name: "John Doe", lastVisit: "2 days ago", status: "Active" },
-    { id: 2, name: "Jane Smith", lastVisit: "1 week ago", status: "Active" },
-    { id: 3, name: "Robert Johnson", lastVisit: "2 weeks ago", status: "Inactive" },
-  ]
-
+export function DashboardContent() {
   return (
-    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-        <div className="flex items-center space-x-2">
-          <Button>
-            <Link href="/dashboard/appointments/new">New Appointment</Link>
-          </Button>
-        </div>
+    <div className="p-6">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+        <p className="text-gray-600">Welcome back! Here's what's happening with your practice.</p>
       </div>
 
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          <TabsTrigger value="reports">Reports</TabsTrigger>
-        </TabsList>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Today's Appointments</CardTitle>
+            <Calendar className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">12</div>
+            <p className="text-xs text-muted-foreground">+2 from yesterday</p>
+          </CardContent>
+        </Card>
 
-        <TabsContent value="overview" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Appointments</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">245</div>
-                <p className="text-xs text-muted-foreground">+12% from last month</p>
-              </CardContent>
-            </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Patients</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">1,234</div>
+            <p className="text-xs text-muted-foreground">+15 this week</p>
+          </CardContent>
+        </Card>
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Active Patients</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">132</div>
-                <p className="text-xs text-muted-foreground">+4% from last month</p>
-              </CardContent>
-            </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Pending Appointments</CardTitle>
+            <Clock className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">8</div>
+            <p className="text-xs text-muted-foreground">Awaiting confirmation</p>
+          </CardContent>
+        </Card>
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Completion Rate</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">93%</div>
-                <p className="text-xs text-muted-foreground">+2% from last month</p>
-              </CardContent>
-            </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Monthly Revenue</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">$12,345</div>
+            <p className="text-xs text-muted-foreground">+8% from last month</p>
+          </CardContent>
+        </Card>
+      </div>
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Revenue</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">$12,234</div>
-                <p className="text-xs text-muted-foreground">+8% from last month</p>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-            <Card className="col-span-4">
-              <CardHeader>
-                <CardTitle>Upcoming Appointments</CardTitle>
-                <CardDescription>You have {upcomingAppointments.length} appointments scheduled</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {upcomingAppointments.map((appointment) => (
-                    <div key={appointment.id} className="flex items-center justify-between border-b pb-4">
-                      <div className="flex items-center space-x-4">
-                        <Avatar>
-                          <AvatarFallback>
-                            {appointment.patient
-                              .split(" ")
-                              .map((n) => n[0])
-                              .join("")}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="text-sm font-medium">{appointment.patient}</p>
-                          <p className="text-sm text-muted-foreground">{appointment.type}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <p className="text-sm">
-                          {appointment.time}, {appointment.date}
-                        </p>
-                        <Badge variant={appointment.status === "confirmed" ? "default" : "outline"}>
-                          {appointment.status}
-                        </Badge>
-                      </div>
-                    </div>
-                  ))}
-                  <Button variant="outline" className="w-full">
-                    View All Appointments
-                  </Button>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Appointments</CardTitle>
+            <CardDescription>Your upcoming appointments for today</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium">John Doe</p>
+                  <p className="text-sm text-gray-600">General Checkup</p>
                 </div>
-              </CardContent>
-            </Card>
-
-            <Card className="col-span-3">
-              <CardHeader>
-                <CardTitle>Calendar</CardTitle>
-                <CardDescription>Schedule and manage your appointments</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Calendar mode="single" selected={date} onSelect={setDate} className="rounded-md border" />
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-            <Card className="col-span-4">
-              <CardHeader>
-                <CardTitle>Recent Patients</CardTitle>
-                <CardDescription>You have {recentPatients.length} recently active patients</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {recentPatients.map((patient) => (
-                    <div key={patient.id} className="flex items-center justify-between border-b pb-4">
-                      <div className="flex items-center space-x-4">
-                        <Avatar>
-                          <AvatarFallback>
-                            {patient.name
-                              .split(" ")
-                              .map((n) => n[0])
-                              .join("")}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="text-sm font-medium">{patient.name}</p>
-                          <p className="text-sm text-muted-foreground">Last visit: {patient.lastVisit}</p>
-                        </div>
-                      </div>
-                      <Badge variant={patient.status === "Active" ? "default" : "outline"}>{patient.status}</Badge>
-                    </div>
-                  ))}
-                  <Button variant="outline" className="w-full">
-                    View All Patients
-                  </Button>
+                <div className="text-sm text-gray-600">10:00 AM</div>
+              </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium">Jane Smith</p>
+                  <p className="text-sm text-gray-600">Follow-up</p>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="text-sm text-gray-600">11:30 AM</div>
+              </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium">Mike Johnson</p>
+                  <p className="text-sm text-gray-600">Consultation</p>
+                </div>
+                <div className="text-sm text-gray-600">2:00 PM</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-            <Card className="col-span-3">
-              <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
-                <CardDescription>Common tasks and operations</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <Button variant="outline" className="w-full justify-start">
-                  Add New Patient
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  Schedule Appointment
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  Send Reminders
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  Generate Reports
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  Manage Staff
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="analytics" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Analytics</CardTitle>
-              <CardDescription>View detailed analytics about your clinic</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p>Analytics content will be displayed here.</p>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="reports" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Reports</CardTitle>
-              <CardDescription>Generate and view reports</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p>Reports content will be displayed here.</p>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+        <Card>
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+            <CardDescription>Common tasks and shortcuts</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 gap-4">
+              <button className="p-4 text-left border rounded-lg hover:bg-gray-50">
+                <Calendar className="h-6 w-6 mb-2 text-blue-600" />
+                <p className="font-medium">New Appointment</p>
+                <p className="text-sm text-gray-600">Schedule appointment</p>
+              </button>
+              <button className="p-4 text-left border rounded-lg hover:bg-gray-50">
+                <Users className="h-6 w-6 mb-2 text-green-600" />
+                <p className="font-medium">Add Patient</p>
+                <p className="text-sm text-gray-600">Register new patient</p>
+              </button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }

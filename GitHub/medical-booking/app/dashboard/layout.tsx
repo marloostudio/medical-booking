@@ -1,23 +1,18 @@
 import type React from "react"
-import type { Metadata } from "next"
+import { requireAuth } from "@/lib/auth-utils"
 import { Sidebar } from "@/components/dashboard/sidebar"
 
-export const metadata: Metadata = {
-  title: "Dashboard | BookingLink",
-  description: "Manage your clinic appointments and patients",
-}
-
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode
-}>) {
+}) {
+  await requireAuth()
+
   return (
-    <div className="flex h-screen overflow-hidden bg-white">
+    <div className="flex h-screen bg-gray-100">
       <Sidebar />
-      <div className="flex-1 overflow-auto bg-gray-50 lg:ml-64">
-        <main className="p-6">{children}</main>
-      </div>
+      <main className="flex-1 overflow-y-auto">{children}</main>
     </div>
   )
 }

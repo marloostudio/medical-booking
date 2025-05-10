@@ -1,0 +1,72 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Production builds
+.next/
+out/
+build/
+dist/
+
+# Generated files
+*.generated.*
+auto-generated/
+
+# Configuration files
+next.config.mjs
+tailwind.config.js
+postcss.config.js
+
+# Environment files
+.env*
+
+# Logs
+*.log
+
+# Coverage
+coverage/
+
+# Cache
+.eslintcache
+.cache/
+.parcel-cache/
+
+# Temporary
+tmp/
+temp/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Package managers
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Vercel
+.vercel/
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Storybook
+.storybook-out/
+storybook-static/
+
+# Testing
+.nyc_output/
+coverage/
+
+# Documentation
+docs/build/

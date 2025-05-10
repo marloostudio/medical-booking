@@ -1,10 +1,8 @@
-import { PageTemplate } from "@/components/dashboard/page-template"
-import { DashboardOverview } from "@/components/dashboard/dashboard-overview"
+import { requireAuth } from "@/lib/auth-utils"
+import { DashboardContent } from "./dashboard-content"
 
-export default function DashboardPage() {
-  return (
-    <PageTemplate title="Dashboard" description="Overview of your clinic's performance and key metrics">
-      <DashboardOverview />
-    </PageTemplate>
-  )
+export default async function DashboardPage() {
+  const session = await requireAuth()
+
+  return <DashboardContent />
 }

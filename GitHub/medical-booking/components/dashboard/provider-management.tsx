@@ -1,14 +1,12 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { collection, doc, getDoc, getDocs, addDoc, updateDoc, deleteDoc, serverTimestamp } from "firebase/firestore"
-import { auth, db } from "@/lib/firebase"
 import { User, Phone, Mail, Calendar, Plus, Edit, Trash2, Save, X, AlertCircle } from "lucide-react"
-import { auditService } from "@/services/audit-service"
 import { useSession } from "next-auth/react"
+import { useToast } from "@/hooks/use-toast"
+import { clientAuditService } from "@/services/audit-service-client"
 
 interface Provider {
   id: string
@@ -54,10 +52,11 @@ const emptyProvider: Omit<Provider, "id" | "createdAt" | "updatedAt"> = {
 export default function ProviderManagement() {
   const router = useRouter()
   const { data: session, status } = useSession()
+  const { toast } = useToast()
+
   const [loading, setLoading] = useState(true)
   const [providers, setProviders] = useState<Provider[]>([])
   const [clinicId, setClinicId] = useState("")
-  const [userId, setUserId] = useState("")
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
 
@@ -69,13 +68,15 @@ export default function ProviderManagement() {
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
 
   useEffect(() => {
-    // First check if we have a session from NextAuth
     if (status === "loading") return
 
+    if (status === "unauthenticated") {
+      router.push("/login")
+      return
+    }
+
     if (session) {
-      // If we have a session, use that
       const userClinicId = session.user?.clinicId as string
-      const userId = session.user?.id as string
 
       if (!userClinicId) {
         setError("No clinic associated with this user")
@@ -84,76 +85,41 @@ export default function ProviderManagement() {
       }
 
       setClinicId(userClinicId)
-      setUserId(userId)
-
-      // Fetch providers
       fetchProviders(userClinicId)
-      return
     }
-
-    // Fallback to Firebase auth if NextAuth session is not available
-    const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      if (!user) {
-        router.push("/login")
-        return
-      }
-
-      try {
-        // Get user data to find clinic ID
-        const userDoc = await getDoc(doc(db, "users", user.uid))
-
-        if (!userDoc.exists()) {
-          throw new Error("User profile not found")
-        }
-
-        const userData = userDoc.data()
-        const userClinicId = userData.clinicId
-
-        if (!userClinicId) {
-          throw new Error("No clinic associated with this user")
-        }
-
-        setClinicId(userClinicId)
-        setUserId(user.uid)
-
-        // Fetch providers
-        await fetchProviders(userClinicId)
-      } catch (error: any) {
-        console.error("Error loading providers:", error)
-        setError(error.message || "Failed to load providers")
-      } finally {
-        setLoading(false)
-      }
-    })
-
-    return () => unsubscribe()
   }, [router, session, status])
 
   const fetchProviders = async (clinicId: string) => {
     try {
       setLoading(true)
-      const providersRef = collection(db, "clinics", clinicId, "providers")
-      const providersSnapshot = await getDocs(providersRef)
+      const response = await fetch(`/api/clinics/${clinicId}/providers`)
 
-      const providersData: Provider[] = []
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || "Failed to fetch providers")
+      }
 
-      providersSnapshot.forEach((doc) => {
-        providersData.push({
-          id: doc.id,
-          ...doc.data(),
-        } as Provider)
+      const data = await response.json()
+      setProviders(data.providers || [])
+
+      // Log the view action using client audit service
+      await clientAuditService.logAction(clinicId, {
+        action: "view",
+        resource: "provider",
+        details: "Viewed provider list",
       })
-
-      setProviders(providersData)
     } catch (error: any) {
       console.error("Error fetching providers:", error)
       setError(error.message || "Failed to fetch providers")
+      toast({
+        title: "Error",
+        description: error.message || "Failed to fetch providers",
+        variant: "destructive",
+      })
     } finally {
       setLoading(false)
     }
   }
-
-  // Rest of the component code remains the same...
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -269,44 +235,49 @@ export default function ProviderManagement() {
         throw new Error("Please fill in all required fields")
       }
 
+      let response
+      let auditAction: "create" | "update"
+      let auditDetails: string
+
       if (editingProvider) {
         // Update existing provider
-        await updateDoc(doc(db, "clinics", clinicId, "providers", editingProvider.id), {
-          ...formData,
-          updatedAt: serverTimestamp(),
+        response = await fetch(`/api/clinics/${clinicId}/providers/${editingProvider.id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
         })
-
-        // Log the update
-        await auditService.logAction(clinicId, {
-          userId,
-          action: "update",
-          resource: "provider",
-          details: `Updated provider: ${formData.firstName} ${formData.lastName}`,
-          ipAddress: "0.0.0.0",
-          userAgent: navigator.userAgent,
-        })
-
-        setSuccess(`Provider ${formData.firstName} ${formData.lastName} updated successfully`)
+        auditAction = "update"
+        auditDetails = `Updated provider: ${formData.firstName} ${formData.lastName}`
       } else {
         // Add new provider
-        await addDoc(collection(db, "clinics", clinicId, "providers"), {
-          ...formData,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp(),
+        response = await fetch(`/api/clinics/${clinicId}/providers`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
         })
-
-        // Log the creation
-        await auditService.logAction(clinicId, {
-          userId,
-          action: "create",
-          resource: "provider",
-          details: `Created provider: ${formData.firstName} ${formData.lastName}`,
-          ipAddress: "0.0.0.0",
-          userAgent: navigator.userAgent,
-        })
-
-        setSuccess(`Provider ${formData.firstName} ${formData.lastName} added successfully`)
+        auditAction = "create"
+        auditDetails = `Created provider: ${formData.firstName} ${formData.lastName}`
       }
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || "Failed to save provider")
+      }
+
+      const result = await response.json()
+      setSuccess(result.message || `Provider ${formData.firstName} ${formData.lastName} saved successfully`)
+
+      // Log the action using client audit service
+      await clientAuditService.logAction(clinicId, {
+        action: auditAction,
+        resource: "provider",
+        resourceId: editingProvider?.id || result.providerId,
+        details: auditDetails,
+      })
 
       // Refresh providers list
       await fetchProviders(clinicId)
@@ -323,6 +294,19 @@ export default function ProviderManagement() {
     } catch (error: any) {
       console.error("Error saving provider:", error)
       setError(error.message || "Failed to save provider")
+      toast({
+        title: "Error",
+        description: error.message || "Failed to save provider",
+        variant: "destructive",
+      })
+
+      // Log the error using client audit service
+      await clientAuditService.logAction(clinicId, {
+        action: editingProvider ? "update" : "create",
+        resource: "provider",
+        details: `Failed to ${editingProvider ? "update" : "create"} provider: ${error.message}`,
+        success: false,
+      })
     } finally {
       setSaving(false)
     }
@@ -351,19 +335,25 @@ export default function ProviderManagement() {
     }
 
     try {
-      await deleteDoc(doc(db, "clinics", clinicId, "providers", providerId))
-
-      // Log the deletion
-      await auditService.logAction(clinicId, {
-        userId,
-        action: "delete",
-        resource: "provider",
-        details: `Deleted provider ID: ${providerId}`,
-        ipAddress: "0.0.0.0",
-        userAgent: navigator.userAgent,
+      const response = await fetch(`/api/clinics/${clinicId}/providers/${providerId}`, {
+        method: "DELETE",
       })
 
-      setSuccess("Provider deleted successfully")
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || "Failed to delete provider")
+      }
+
+      const result = await response.json()
+      setSuccess(result.message || "Provider deleted successfully")
+
+      // Log the action using client audit service
+      await clientAuditService.logAction(clinicId, {
+        action: "delete",
+        resource: "provider",
+        resourceId: providerId,
+        details: `Deleted provider ID: ${providerId}`,
+      })
 
       // Refresh providers list
       await fetchProviders(clinicId)
@@ -375,6 +365,20 @@ export default function ProviderManagement() {
     } catch (error: any) {
       console.error("Error deleting provider:", error)
       setError(error.message || "Failed to delete provider")
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete provider",
+        variant: "destructive",
+      })
+
+      // Log the error using client audit service
+      await clientAuditService.logAction(clinicId, {
+        action: "delete",
+        resource: "provider",
+        resourceId: providerId,
+        details: `Failed to delete provider: ${error.message}`,
+        success: false,
+      })
     } finally {
       setConfirmDelete(null)
     }

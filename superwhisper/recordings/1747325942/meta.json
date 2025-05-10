@@ -1,0 +1,31 @@
+{
+  "processingTime" : 1630,
+  "rawResult" : " I have asked Rex Sonic to provide me with the list of the issues with the UINUX.",
+  "recordingDevice" : "AppleUSBAudioEngine:Apple Inc.:Display Audio:18150B25:2,1",
+  "modelKey" : "small",
+  "duration" : 12572,
+  "separateSpeakersEnabled" : false,
+  "prompt" : "",
+  "modeName" : "Default",
+  "applicationContextEnabled" : false,
+  "systemAudioEnabled" : false,
+  "speakers" : [
+
+  ],
+  "languageModelName" : "",
+  "languageSelected" : "en",
+  "appVersion" : "1.45.14",
+  "datetime" : "2025-05-15T16:19:17",
+  "result" : "I have asked Rex Sonic to provide me with the list of the issues with the UINUX.",
+  "segments" : [
+    {
+      "end" : 12,
+      "start" : 0,
+      "text" : "I have asked Rex Sonic to provide me with the list of the issues with the UINUX."
+    }
+  ],
+  "modelName" : "Standard",
+  "translationEnabled" : false,
+  "realtimeEnabled" : false,
+  "literalPunctuationEnabled" : false
+}

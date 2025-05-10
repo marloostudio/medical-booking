@@ -1,8 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    forceSwcTransforms: true,
-  },
+  reactStrictMode: true,
+  swcMinify: true,
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -10,35 +9,44 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    domains: ['localhost', 'vercel.app', 'firebasestorage.googleapis.com'],
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '**.googleapis.com',
-      },
-      {
-        protocol: 'https',
-        hostname: '**.firebaseapp.com',
-      },
-    ],
+    domains: ['firebasestorage.googleapis.com', 'lh3.googleusercontent.com'],
     unoptimized: true,
   },
-  env: {
-    CUSTOM_KEY: process.env.CUSTOM_KEY,
-  },
-  async headers() {
-    return [
-      {
-        source: '/api/:path*',
-        headers: [
-          { key: 'Access-Control-Allow-Credentials', value: 'true' },
-          { key: 'Access-Control-Allow-Origin', value: '*' },
-          { key: 'Access-Control-Allow-Methods', value: 'GET,OPTIONS,PATCH,DELETE,POST,PUT' },
-          { key: 'Access-Control-Allow-Headers', value: 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version' },
-        ]
-      }
-    ]
+  webpack: (config, { isServer }) => {
+    // Prevent Firebase Admin and other server-only modules from being bundled on the client side
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+        child_process: false,
+        crypto: false,
+        stream: false,
+        util: false,
+        url: false,
+        querystring: false,
+      };
+      
+      // Externalize server-only dependencies
+      config.externals = [
+        ...(config.externals || []),
+        {
+          'firebase-admin': 'commonjs firebase-admin',
+          'firebase-admin/app': 'commonjs firebase-admin/app',
+          'firebase-admin/auth': 'commonjs firebase-admin/auth',
+          'firebase-admin/firestore': 'commonjs firebase-admin/firestore',
+          'twilio': 'commonjs twilio',
+          '@sendgrid/mail': 'commonjs @sendgrid/mail',
+          'fs': 'commonjs fs',
+          'child_process': 'commonjs child_process',
+          'crypto': 'commonjs crypto',
+        }
+      ];
+    }
+    
+    return config;
   },
 }
 
-export default nextConfig
+export default nextConfig;

@@ -3,7 +3,7 @@ import { auditService } from "./audit-service"
 import { emailService } from "./email-service"
 
 // Add these imports at the top
-import { format, addHours, addDays, parseISO, isBefore } from "date-fns"
+import { format, addHours, addDays, parseISO, isBefore } from "@/lib/date-utils"
 import { db } from "@/lib/firebase"
 import { collection, doc, getDoc, setDoc, updateDoc, query, where, getDocs } from "firebase/firestore"
 import { v4 as uuidv4 } from "uuid"

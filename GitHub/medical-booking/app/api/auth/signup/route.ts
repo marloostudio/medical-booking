@@ -1,15 +1,13 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { adminAuth, adminDb } from "@/lib/firebase-admin"
 
-export const runtime = "nodejs"
-
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { email, password, name, clinicName, address } = body
+    const { firstName, lastName, email, password, role, clinicName, phone } = body
 
     // Validate required fields
-    if (!email || !password || !name || !clinicName) {
+    if (!firstName || !lastName || !email || !password || !role) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
@@ -18,92 +16,60 @@ export async function POST(request: NextRequest) {
       await adminAuth.getUserByEmail(email)
       return NextResponse.json({ error: "User already exists" }, { status: 400 })
     } catch (error) {
-      // User doesn't exist, which is what we want
+      // User doesn't exist, continue with creation
     }
 
     // Create user in Firebase Auth
     const userRecord = await adminAuth.createUser({
       email,
       password,
-      displayName: name,
-      emailVerified: false,
+      displayName: `${firstName} ${lastName}`,
     })
 
-    // Generate a unique clinic ID
-    const clinicId = `clinic_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    // Create clinic if user is clinic owner
+    let clinicId = null
+    if (role === "CLINIC_OWNER" && clinicName) {
+      const clinicRef = adminDb.collection("clinics").doc()
+      clinicId = clinicRef.id
 
-    // Create clinic document
-    await adminDb
-      .collection("clinics")
-      .doc(clinicId)
-      .set({
+      await clinicRef.set({
         name: clinicName,
-        owner: userRecord.uid,
-        email: email,
-        address: {
-          street: address?.street || "",
-          city: address?.city || "",
-          state: address?.state || "",
-          zipCode: address?.zipCode || "",
-          country: address?.country || "US",
-        },
+        ownerId: userRecord.uid,
         createdAt: new Date(),
-        updatedAt: new Date(),
-        status: "active",
-        plan: "basic",
         settings: {
-          appointmentBuffer: 15,
-          defaultAppointmentDuration: 30,
-          weekStartsOn: 0,
+          timezone: "America/Toronto",
           businessHours: {
-            monday: { isOpen: true, open: "09:00", close: "17:00" },
-            tuesday: { isOpen: true, open: "09:00", close: "17:00" },
-            wednesday: { isOpen: true, open: "09:00", close: "17:00" },
-            thursday: { isOpen: true, open: "09:00", close: "17:00" },
-            friday: { isOpen: true, open: "09:00", close: "17:00" },
-            saturday: { isOpen: false, open: "09:00", close: "13:00" },
-            sunday: { isOpen: false, open: "00:00", close: "00:00" },
+            monday: { start: "09:00", end: "17:00", enabled: true },
+            tuesday: { start: "09:00", end: "17:00", enabled: true },
+            wednesday: { start: "09:00", end: "17:00", enabled: true },
+            thursday: { start: "09:00", end: "17:00", enabled: true },
+            friday: { start: "09:00", end: "17:00", enabled: true },
+            saturday: { start: "09:00", end: "13:00", enabled: false },
+            sunday: { start: "09:00", end: "13:00", enabled: false },
           },
         },
       })
+    }
 
-    // Create user profile
-    await adminDb.collection("users").doc(userRecord.uid).set({
-      email: email,
-      displayName: name,
-      clinicId: clinicId,
-      role: "CLINIC_OWNER",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      emailVerified: false,
-      status: "active",
-      lastLogin: new Date(),
-    })
-
-    // Create staff record
+    // Create user document in Firestore
     await adminDb
-      .collection("staff")
+      .collection("users")
       .doc(userRecord.uid)
       .set({
-        clinicId: clinicId,
-        name: name,
-        email: email,
-        role: "CLINIC_OWNER",
-        permissions: ["all"],
+        firstName,
+        lastName,
+        email,
+        role,
+        clinicId,
+        phone: phone || null,
         createdAt: new Date(),
-        updatedAt: new Date(),
+        emailVerified: false,
+        isActive: true,
       })
 
-    return NextResponse.json(
-      {
-        message: "User created successfully",
-        userId: userRecord.uid,
-        clinicId: clinicId,
-      },
-      { status: 201 },
-    )
+    return NextResponse.json({ message: "User created successfully", userId: userRecord.uid }, { status: 201 })
   } catch (error) {
     console.error("Signup error:", error)
-    return NextResponse.json({ error: "Failed to create user" }, { status: 500 })
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }

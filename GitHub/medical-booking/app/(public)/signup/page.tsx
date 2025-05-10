@@ -1,13 +1,11 @@
-import { Suspense } from "react"
-import SignupContent from "./signup-content"
+import type { Metadata } from "next"
+import { SignupContent } from "./signup-content"
 
-// Set the runtime to nodejs to ensure Firebase Admin works correctly
-export const runtime = "nodejs"
+export const metadata: Metadata = {
+  title: "Sign Up - BookingLink",
+  description: "Create your BookingLink account",
+}
 
 export default function SignupPage() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <SignupContent />
-    </Suspense>
-  )
+  return <SignupContent />
 }

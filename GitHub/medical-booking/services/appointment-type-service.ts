@@ -1,4 +1,4 @@
-import { db } from "@/lib/firebase"
+import { db } from "@/lib/firebase-client"
 import { collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, query, where } from "firebase/firestore"
 import { v4 as uuidv4 } from "uuid"
 
