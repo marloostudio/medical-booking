@@ -1,3 +1,5 @@
+"use client"
+
 import { auth, db } from "@/lib/firebase"
 import { doc, updateDoc, getDoc, serverTimestamp } from "firebase/firestore"
 import { sendEmailVerification, applyActionCode, checkActionCode } from "firebase/auth"

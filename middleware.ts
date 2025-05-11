@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server"
-import type { NextRequest } from "next/server"
+import { type NextRequest, NextResponse } from "next/server"
+import { getToken } from "next-auth/jwt"
+import { superAdminMiddleware } from "./middleware/super-admin-middleware"
 
 // Public paths that don't require authentication
 const publicPaths = [
@@ -30,7 +31,25 @@ const isPublicPath = (path: string) => {
   )
 }
 
-export async function middleware(request: NextRequest) {
+export async function middleware(req: NextRequest) {
+  const path = req.nextUrl.pathname
+
+  // Apply super admin middleware for admin routes
+  if (path.startsWith("/admin")) {
+    return superAdminMiddleware(req)
+  }
+
+  // Handle other protected routes (dashboard, etc.)
+  if (path.startsWith("/dashboard")) {
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
+
+    // For development/testing purposes, allow access even without a token
+    // In production, you would remove this condition and keep only the redirect
+    if (!token && process.env.NODE_ENV === "production") {
+      return NextResponse.redirect(new URL("/login?error=unauthorized", req.url))
+    }
+  }
+
   // Create a response object from the request
   const response = NextResponse.next()
 
@@ -40,16 +59,13 @@ export async function middleware(request: NextRequest) {
   response.headers.set("Expires", "0")
 
   // Redirect patients dashboard to main dashboard
-  if (
-    request.nextUrl.pathname === "/dashboard/patients" ||
-    request.nextUrl.pathname.startsWith("/dashboard/patients/")
-  ) {
-    return NextResponse.redirect(new URL("/dashboard", request.url))
+  if (req.nextUrl.pathname === "/dashboard/patients" || req.nextUrl.pathname.startsWith("/dashboard/patients/")) {
+    return NextResponse.redirect(new URL("/dashboard", req.url))
   }
 
   return response
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|public).*)"],
+  matcher: ["/admin/:path*", "/dashboard/:path*"],
 }

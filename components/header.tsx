@@ -13,8 +13,8 @@ export function Header() {
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center">
+          {/* Logo - Fixed the home link */}
+          <Link href="/home" className="flex items-center">
             <span className="text-xl font-bold text-blue-600">BookingLink</span>
           </Link>
 
@@ -80,6 +80,26 @@ export function Header() {
             <Link href="/contact" className="text-gray-600 hover:text-blue-600 transition-colors">
               Contact
             </Link>
+            {process.env.NODE_ENV === "development" && (
+              <DropdownMenu>
+                <DropdownMenuTrigger className="flex items-center text-gray-600 hover:text-blue-600 transition-colors">
+                  Panels
+                  <ChevronDown className="ml-1 h-4 w-4" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="center" className="w-56">
+                  <DropdownMenuItem asChild>
+                    <Link href="/dev/clinic-dashboard" className="w-full">
+                      Clinic Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/dev/admin-dashboard" className="w-full">
+                      Super Admin Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </nav>
 
           {/* Auth Buttons */}
@@ -137,6 +157,24 @@ export function Header() {
             >
               Contact
             </Link>
+            {process.env.NODE_ENV === "development" && (
+              <>
+                <Link
+                  href="/dev/clinic-dashboard"
+                  className="block py-2 text-gray-600 hover:text-blue-600 transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Clinic Dashboard
+                </Link>
+                <Link
+                  href="/dev/admin-dashboard"
+                  className="block py-2 text-gray-600 hover:text-blue-600 transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Super Admin Dashboard
+                </Link>
+              </>
+            )}
             <div className="pt-4 border-t border-gray-200 flex flex-col space-y-4">
               <Button variant="ghost" asChild className="justify-center">
                 <Link href="/login" onClick={() => setMobileMenuOpen(false)}>

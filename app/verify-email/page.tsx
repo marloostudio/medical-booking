@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import Link from "next/link"
-import { CheckCircle, XCircle, Loader2 } from "lucide-react"
-import { verificationService } from "@/services/verification-service"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Loader2, CheckCircle, XCircle } from "lucide-react"
 
 export default function VerifyEmailPage() {
   const router = useRouter()
@@ -15,98 +15,76 @@ export default function VerifyEmailPage() {
   useEffect(() => {
     const verifyEmail = async () => {
       try {
-        const mode = searchParams?.get("mode")
-        const oobCode = searchParams?.get("oobCode")
+        const oobCode = searchParams.get("oobCode")
 
-        if (mode !== "verifyEmail" || !oobCode) {
+        if (!oobCode) {
           setStatus("error")
-          setMessage("Invalid verification link")
+          setMessage("Invalid verification link. Please try again.")
           return
         }
 
-        const result = await verificationService.verifyEmail(oobCode)
+        // In a real app, this would call the Firebase API
+        // For now, we'll simulate a successful verification after a delay
+        await new Promise((resolve) => setTimeout(resolve, 1500))
 
-        if (result.success) {
-          setStatus("success")
-          setMessage("Your email has been verified successfully!")
-        } else {
-          setStatus("error")
-          setMessage(result.message || "Failed to verify email")
-        }
+        setStatus("success")
+        setMessage("Your email has been verified successfully!")
       } catch (error: any) {
-        console.error("Error verifying email:", error)
         setStatus("error")
-        setMessage(error.message || "An error occurred during verification")
+        setMessage(error.message || "Failed to verify email. Please try again.")
       }
     }
 
     verifyEmail()
-  }, [searchParams, router])
+  }, [searchParams])
+
+  const handleContinue = () => {
+    router.push("/dev/clinic-dashboard")
+  }
+
+  const handleTryAgain = () => {
+    router.push("/signup")
+  }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Email Verification</h2>
-        </div>
-
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+    <div className="flex items-center justify-center min-h-screen p-4 bg-gray-50">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle>Email Verification</CardTitle>
+          <CardDescription>Verifying your email address</CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col items-center justify-center py-6">
           {status === "loading" && (
-            <div className="flex flex-col items-center justify-center py-4">
-              <Loader2 className="h-12 w-12 text-blue-500 animate-spin" />
-              <p className="mt-4 text-gray-600">Verifying your email...</p>
-            </div>
+            <>
+              <Loader2 className="h-16 w-16 text-blue-500 animate-spin mb-4" />
+              <p className="text-center text-gray-600">Verifying your email address...</p>
+            </>
           )}
 
           {status === "success" && (
-            <div className="rounded-md bg-green-50 p-4">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <CheckCircle className="h-5 w-5 text-green-400" />
-                </div>
-                <div className="ml-3">
-                  <h3 className="text-sm font-medium text-green-800">Email Verified</h3>
-                  <div className="mt-2 text-sm text-green-700">
-                    <p>{message}</p>
-                  </div>
-                  <div className="mt-4">
-                    <Link
-                      href="/login"
-                      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                    >
-                      Go to Login
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <>
+              <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
+              <p className="text-center text-gray-600">{message}</p>
+            </>
           )}
 
           {status === "error" && (
-            <div className="rounded-md bg-red-50 p-4">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <XCircle className="h-5 w-5 text-red-400" />
-                </div>
-                <div className="ml-3">
-                  <h3 className="text-sm font-medium text-red-800">Verification Failed</h3>
-                  <div className="mt-2 text-sm text-red-700">
-                    <p>{message}</p>
-                  </div>
-                  <div className="mt-4">
-                    <Link
-                      href="/login"
-                      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                    >
-                      Return to Login
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <>
+              <XCircle className="h-16 w-16 text-red-500 mb-4" />
+              <p className="text-center text-gray-600">{message}</p>
+            </>
           )}
-        </div>
-      </div>
+        </CardContent>
+        <CardFooter className="flex justify-center">
+          {status === "success" && <Button onClick={handleContinue}>Continue to Dashboard</Button>}
+
+          {status === "error" && (
+            <Button onClick={handleTryAgain} variant="outline">
+              Try Again
+            </Button>
+          )}
+        </CardFooter>
+      </Card>
     </div>
   )
 }

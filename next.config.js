@@ -25,8 +25,11 @@ const nextConfig = {
     "@firebase/remote-config",
     "@firebase/messaging",
   ],
-  // Webpack configuration to handle Node.js polyfills
+  // Webpack configuration to handle Node.js polyfills and undici
   webpack: (config, { isServer }) => {
+    // Add topLevelAwait support
+    config.experiments = { ...config.experiments, topLevelAwait: true }
+
     if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
@@ -41,9 +44,15 @@ const nextConfig = {
         path: false,
         os: false,
         util: false,
+        undici: false,
       }
     }
+
     return config
+  },
+  // Exclude problematic packages from the client bundle
+  experimental: {
+    serverComponentsExternalPackages: ["undici", "firebase", "@firebase/auth"],
   },
 }
 

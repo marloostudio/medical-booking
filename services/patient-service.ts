@@ -10,6 +10,7 @@ import {
   query,
   where,
   orderBy,
+  limit,
 } from "firebase/firestore"
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage"
 import { v4 as uuidv4 } from "uuid"
@@ -243,9 +244,28 @@ export const patientService = {
     return decryptPatientData(patient)
   },
 
-  async getPatients(clinicId: string): Promise<Patient[]> {
+  async getPatients(
+    clinicId: string,
+    options: { limit?: number; sortBy?: string; sortDirection?: "asc" | "desc" } = {},
+  ): Promise<Patient[]> {
     const patientsRef = collection(db, `clinics/${clinicId}/patients`)
-    const snapshot = await getDocs(patientsRef)
+
+    let patientsQuery = query(patientsRef)
+
+    // Apply sorting if specified
+    if (options.sortBy) {
+      patientsQuery = query(patientsQuery, orderBy(options.sortBy, options.sortDirection || "asc"))
+    } else {
+      // Default sort by updatedAt
+      patientsQuery = query(patientsQuery, orderBy("updatedAt", "desc"))
+    }
+
+    // Apply limit if specified
+    if (options.limit) {
+      patientsQuery = query(patientsQuery, limit(options.limit))
+    }
+
+    const snapshot = await getDocs(patientsQuery)
 
     const patients: Patient[] = []
     snapshot.forEach((doc) => {
@@ -263,7 +283,7 @@ export const patientService = {
       })
     })
 
-    return patients.sort((a, b) => b.updatedAt - a.updatedAt)
+    return patients
   },
 
   async searchPatients(

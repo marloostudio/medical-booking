@@ -1,6 +1,10 @@
-import { redirect } from "next/navigation"
+import { PageTemplate } from "@/components/dashboard/page-template"
+import { PatientSearch } from "@/components/dashboard/patient-search"
 
 export default function PatientsPage() {
-  // Redirect to the patients placeholder page
-  redirect("/dashboard/patients-placeholder")
+  return (
+    <PageTemplate title="Patients" description="Search, view, and manage patient records">
+      <PatientSearch />
+    </PageTemplate>
+  )
 }

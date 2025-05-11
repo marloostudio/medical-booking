@@ -1,25 +1,26 @@
 import type React from "react"
-import "./globals.css"
 import type { Metadata } from "next"
+import { Inter } from "next/font/google"
+import "./globals.css"
+import { ThemeProvider } from "@/components/theme-provider"
+
+const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Medical Booking Platform",
-  description: "Schedule appointments, manage patients, and streamline your clinic operations.",
+  title: "BookingLink - Medical Appointment Booking Platform",
+  description: "Streamline your clinic's appointment scheduling with BookingLink",
 }
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode
-}) {
-  // Dashboard and admin pages have their own layouts
-  const isDashboardOrAdmin = (path: string) => {
-    return path.startsWith("/dashboard") || path.startsWith("/admin")
-  }
-
+}>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className={inter.className}>
+        <ThemeProvider>{children}</ThemeProvider>
+      </body>
     </html>
   )
 }

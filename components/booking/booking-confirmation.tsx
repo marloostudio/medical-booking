@@ -7,8 +7,11 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { AlertCircle } from "lucide-react"
 import type { AppointmentType } from "@/services/appointment-type-service"
 import { CalendarDays, Clock, User } from "lucide-react"
+import { bookingRulesService } from "@/services/booking-rules-service"
 
 interface StaffMember {
   id: string
@@ -17,8 +20,9 @@ interface StaffMember {
   imageUrl?: string
 }
 
-// Update the BookingConfirmationProps interface to include reminderPreferences
 interface BookingConfirmationProps {
+  clinicId: string
+  patientId: string
   appointmentType: AppointmentType
   staffMember: StaffMember
   startTime: Date
@@ -40,8 +44,9 @@ interface BookingConfirmationProps {
   showGoogleCalendarOption?: boolean
 }
 
-// Update the BookingConfirmation component to include reminder preferences
 export function BookingConfirmation({
+  clinicId,
+  patientId,
   appointmentType,
   staffMember,
   startTime,
@@ -58,8 +63,45 @@ export function BookingConfirmation({
   const [enableReminders, setEnableReminders] = useState(true)
   const [reminderSms, setReminderSms] = useState(true)
   const [reminderEmail, setReminderEmail] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [validating, setValidating] = useState(false)
 
-  const handleSubmit = () => {
+  const validateBookingAgainstRules = async () => {
+    try {
+      setValidating(true)
+      setError(null)
+
+      const result = await bookingRulesService.validateBookingAgainstRules(
+        clinicId,
+        patientId,
+        staffMember.id,
+        appointmentType.id,
+        startTime,
+      )
+
+      if (!result.valid) {
+        setError(result.message || "This appointment cannot be booked due to clinic rules.")
+        return false
+      }
+
+      return true
+    } catch (error: any) {
+      console.error("Error validating booking rules:", error)
+      setError(error.message || "Failed to validate booking rules. Please try again.")
+      return false
+    } finally {
+      setValidating(false)
+    }
+  }
+
+  const handleSubmit = async () => {
+    // Validate against booking rules
+    const isValid = await validateBookingAgainstRules()
+    if (!isValid) {
+      return
+    }
+
+    // Proceed with booking
     onConfirm(
       notes,
       createRecurring,
@@ -78,6 +120,14 @@ export function BookingConfirmation({
   return (
     <div className="space-y-6">
       <h3 className="text-lg font-medium">Confirm Your Appointment</h3>
+
+      {error && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Booking Error</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
 
       <Card>
         <CardHeader>
@@ -229,11 +279,11 @@ export function BookingConfirmation({
           </div>
         </CardContent>
         <CardFooter className="flex flex-col sm:flex-row gap-3">
-          <Button variant="outline" onClick={onBack} disabled={isSubmitting} className="w-full sm:w-auto">
+          <Button variant="outline" onClick={onBack} disabled={isSubmitting || validating} className="w-full sm:w-auto">
             Back
           </Button>
-          <Button onClick={handleSubmit} disabled={isSubmitting} className="w-full sm:w-auto">
-            {isSubmitting ? "Confirming..." : "Confirm Appointment"}
+          <Button onClick={handleSubmit} disabled={isSubmitting || validating} className="w-full sm:w-auto">
+            {validating ? "Validating..." : isSubmitting ? "Confirming..." : "Confirm Appointment"}
           </Button>
         </CardFooter>
       </Card>

@@ -1,64 +1,23 @@
-import * as admin from "firebase-admin"
+import { initializeApp, getApps, cert } from "firebase-admin/app"
+import { getFirestore } from "firebase-admin/firestore"
+import { getAuth } from "firebase-admin/auth"
 
-// Check if all required environment variables are present
-const requiredEnvVars = ["NEXT_PUBLIC_FIREBASE_PROJECT_ID", "FIREBASE_CLIENT_EMAIL", "FIREBASE_PRIVATE_KEY"]
-
-// Log warning if any required environment variables are missing
-requiredEnvVars.forEach((varName) => {
-  if (!process.env[varName]) {
-    console.warn(`Warning: Environment variable ${varName} is not set`)
-  }
-})
-
-// Initialize Firebase Admin if not already initialized
-if (!admin.apps.length) {
-  // Get the Firebase private key
-  const privateKey = process.env.FIREBASE_PRIVATE_KEY
-    ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n")
-    : undefined
-
-  try {
-    admin.initializeApp({
-      credential: admin.credential.cert({
-        projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        privateKey,
-      }),
-      storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-    })
-    console.log("Firebase Admin initialized successfully")
-  } catch (error) {
-    console.error("Firebase Admin initialization error:", error)
-  }
+// Initialize Firebase Admin SDK
+const firebaseAdminConfig = {
+  credential: cert({
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+    privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
+  }),
+  databaseURL: `https://${process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID}.firebaseio.com`,
 }
 
-export const db = admin.firestore()
-export const auth = admin.auth()
-export const storage = admin.storage()
-export const adminDb = db
-export const adminAuth = auth
+// Initialize the app only if it hasn't been initialized already
+const apps = getApps()
+const firebaseAdmin = apps.length === 0 ? initializeApp(firebaseAdminConfig) : apps[0]
 
-export const initializeFirebaseAdmin = () => {
-  if (!admin.apps.length) {
-    // Get the Firebase private key
-    const privateKey = process.env.FIREBASE_PRIVATE_KEY
-      ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n")
-      : undefined
+// Get Firestore and Auth instances
+const adminDb = getFirestore()
+const adminAuth = getAuth()
 
-    try {
-      admin.initializeApp({
-        credential: admin.credential.cert({
-          projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-          privateKey,
-        }),
-        storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-      })
-      console.log("Firebase Admin initialized successfully")
-    } catch (error) {
-      console.error("Firebase Admin initialization error:", error)
-    }
-  }
-}
-
-export default admin
+export { firebaseAdmin, adminDb, adminAuth }
