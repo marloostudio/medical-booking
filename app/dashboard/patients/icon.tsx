@@ -1,15 +1,7 @@
-import { NextResponse } from "next/server"
+// This is a static icon component, not an API route
+// Removed any GET exports as they're not needed for an icon component
 
-// Route handler for API requests to this path
-export async function GET() {
-  return NextResponse.json({
-    message: "Icon data endpoint",
-  })
-}
-
-// Default export for the React component (used for rendering)
 export default function PatientsIcon() {
-  // This is the React component that will be rendered in the UI
   return null
 }
 
