@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
+
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -11,26 +11,51 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // Add transpilation configuration
-  transpilePackages: [
-    "firebase",
-    "@firebase/app",
-    "@firebase/auth",
-    "@firebase/firestore",
-    "@firebase/storage",
-    "@firebase/util",
-    "@firebase/database",
-    "@firebase/analytics",
-    "@firebase/functions",
-    "@firebase/remote-config",
-    "@firebase/messaging",
-  ],
-  // Webpack configuration to handle Node.js polyfills and undici
-  webpack: (config, { isServer }) => {
-    // Add topLevelAwait support
-    config.experiments = { ...config.experiments, topLevelAwait: true }
 
+  // Add transpilation configuration
+  transpilePackages: ["lucide-react"],
+
+  // Use serverRuntimeConfig for server-only configuration
+  serverRuntimeConfig: {
+    firebaseAdminConfig: {
+      projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+      privateKey: process.env.FIREBASE_PRIVATE_KEY,
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+    },
+  },
+
+  // Use publicRuntimeConfig for client and server configuration
+  publicRuntimeConfig: {
+    siteUrl: process.env.NEXT_PUBLIC_SITE_URL,
+  },
+
+  // Add headers for security
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "no-store, max-age=0, must-revalidate",
+          },
+          {
+            key: "Pragma",
+            value: "no-cache",
+          },
+          {
+            key: "Expires",
+            value: "0",
+          },
+        ],
+      },
+    ]
+  },
+
+  // Webpack configuration to handle Node.js polyfills
+  webpack: (config, { isServer }) => {
     if (!isServer) {
+      // Ensure these Node.js modules are not included in client-side bundles
       config.resolve.fallback = {
         ...config.resolve.fallback,
         fs: false,
@@ -44,15 +69,14 @@ const nextConfig = {
         path: false,
         os: false,
         util: false,
-        undici: false,
       }
     }
-
     return config
   },
-  // Exclude problematic packages from the client bundle
+
+  // Update experimental options
   experimental: {
-    serverComponentsExternalPackages: ["undici", "firebase", "@firebase/auth"],
+    appDir: true,
   },
 }
 

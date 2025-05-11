@@ -10,12 +10,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertCircle, Edit, Trash2 } from "lucide-react"
 import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { bookingRulesService, type BookingRule } from "@/services/booking-rules-service"
 import { auth, db } from "@/lib/firebase"
 import { doc, getDoc } from "firebase/firestore"
 import { useRouter } from "next/navigation"
+
+// Import the zod resolver directly
+import { zodResolver } from "@hookform/resolvers/zod"
 
 export function BookingRulesManager() {
   const router = useRouter()

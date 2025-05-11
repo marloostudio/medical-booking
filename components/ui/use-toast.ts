@@ -177,3 +177,32 @@ export function useToast(): UseToast {
     toasts: state.toasts,
   }
 }
+
+// Add the missing named export
+export const toast = (props: Omit<Toast, "id">) => {
+  const id = generateId()
+
+  const update = (props: Partial<Toast>) =>
+    dispatch({
+      type: actionTypes.UPDATE_TOAST,
+      toast: { ...props, id },
+    })
+  const dismiss = () => dispatch({ type: actionTypes.DISMISS_TOAST, toastId: id })
+
+  dispatch({
+    type: actionTypes.ADD_TOAST,
+    toast: {
+      ...props,
+      id,
+      onOpenChange: (open) => {
+        if (!open) dismiss()
+      },
+    },
+  })
+
+  return {
+    id,
+    dismiss,
+    update,
+  }
+}

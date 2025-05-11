@@ -20,4 +20,12 @@ const firebaseAdmin = apps.length === 0 ? initializeApp(firebaseAdminConfig) : a
 const adminDb = getFirestore()
 const adminAuth = getAuth()
 
+// Add the missing named export
+export function initializeFirebaseAdmin() {
+  if (getApps().length === 0) {
+    return initializeApp(firebaseAdminConfig)
+  }
+  return getApps()[0]
+}
+
 export { firebaseAdmin, adminDb, adminAuth }

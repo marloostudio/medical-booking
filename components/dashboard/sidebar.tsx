@@ -1,88 +1,34 @@
 "use client"
 
-import type React from "react"
-
+import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useState, useEffect } from "react"
 import {
-  Calendar,
+  LayoutDashboard,
   Users,
-  Settings,
-  BarChart2,
-  Bell,
-  FileText,
+  Calendar,
+  UserCog,
   CreditCard,
+  Bell,
+  BarChart3,
+  Settings,
   HelpCircle,
+  LogOut,
   ChevronDown,
   ChevronRight,
-  LogOut,
-  Home,
-  UserPlus,
-  Clock,
-  FileSpreadsheet,
-  CalendarDays,
-  CalendarPlus,
-  ListChecks,
-  UserCog,
-  Stethoscope,
-  DollarSign,
-  Receipt,
-  RefreshCcw,
-  MessageSquare,
-  BellRing,
-  Shield,
-  Activity,
-  PieChart,
-  LineChart,
-  Building,
-  Globe,
-  User,
 } from "lucide-react"
-import { cn } from "@/lib/utils"
-
-type MenuSection = {
-  id: string
-  title: string
-  icon: React.ReactNode
-  items: MenuItem[]
-}
-
-type MenuItem = {
-  title: string
-  href: string
-  icon: React.ReactNode
-}
 
 export function Sidebar() {
   const pathname = usePathname()
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({
-    dashboard: true,
-    patients: false,
-    appointments: false,
-    staff: false,
-    payments: false,
-    notifications: false,
-    admin: false,
-    analytics: false,
-    settings: false,
+    patients: true,
+    appointments: true,
+    staff: true,
+    payments: true,
+    notifications: true,
+    analytics: true,
+    settings: true,
   })
-
-  // Update open state based on current path
-  useEffect(() => {
-    const pathSegments = pathname.split("/")
-    if (pathSegments.length > 1) {
-      const section = pathSegments[1] // e.g., /dashboard/patients -> dashboard
-      const subsection = pathSegments.length > 2 ? pathSegments[2] : null // e.g., /dashboard/patients -> patients
-
-      if (subsection && !openMenus[subsection]) {
-        setOpenMenus((prev) => ({
-          ...prev,
-          [subsection]: true,
-        }))
-      }
-    }
-  }, [pathname])
 
   const toggleMenu = (menu: string) => {
     setOpenMenus((prev) => ({
@@ -91,254 +37,414 @@ export function Sidebar() {
     }))
   }
 
-  const menuSections: MenuSection[] = [
-    {
-      id: "dashboard",
-      title: "Dashboard",
-      icon: <Home className="h-5 w-5 text-teal-600" />,
-      items: [
-        {
-          title: "Overview",
-          href: "/dashboard",
-          icon: <BarChart2 className="h-4 w-4 mr-2" />,
-        },
-      ],
-    },
-    {
-      id: "patients",
-      title: "Patients",
-      icon: <Users className="h-5 w-5 text-teal-600" />,
-      items: [
-        {
-          title: "View Patients",
-          href: "/dashboard/patients",
-          icon: <Users className="h-4 w-4 mr-2" />,
-        },
-        {
-          title: "Add Patient",
-          href: "/dashboard/patients/new",
-          icon: <UserPlus className="h-4 w-4 mr-2" />,
-        },
-        {
-          title: "Import Patients",
-          href: "/dashboard/patients/import",
-          icon: <FileSpreadsheet className="h-4 w-4 mr-2" />,
-        },
-      ],
-    },
-    {
-      id: "appointments",
-      title: "Appointments",
-      icon: <Calendar className="h-5 w-5 text-teal-600" />,
-      items: [
-        {
-          title: "Calendar View",
-          href: "/dashboard/appointments/calendar",
-          icon: <CalendarDays className="h-4 w-4 mr-2" />,
-        },
-        {
-          title: "Book Appointment",
-          href: "/dashboard/appointments/new",
-          icon: <CalendarPlus className="h-4 w-4 mr-2" />,
-        },
-        {
-          title: "Appointment Types",
-          href: "/dashboard/settings/appointment-types",
-          icon: <ListChecks className="h-4 w-4 mr-2" />,
-        },
-        {
-          title: "Upcoming Appointments",
-          href: "/dashboard/appointments/upcoming",
-          icon: <Clock className="h-4 w-4 mr-2" />,
-        },
-        {
-          title: "Past Appointments",
-          href: "/dashboard/appointments/past",
-          icon: <FileText className="h-4 w-4 mr-2" />,
-        },
-      ],
-    },
-    {
-      id: "staff",
-      title: "Staff & Providers",
-      icon: <Stethoscope className="h-5 w-5 text-teal-600" />,
-      items: [
-        {
-          title: "Manage Staff",
-          href: "/dashboard/settings/staff",
-          icon: <UserCog className="h-4 w-4 mr-2" />,
-        },
-        {
-          title: "Provider Availability",
-          href: "/dashboard/settings/availability",
-          icon: <Clock className="h-4 w-4 mr-2" />,
-        },
-        {
-          title: "Roles & Permissions",
-          href: "/dashboard/settings/roles",
-          icon: <Shield className="h-4 w-4 mr-2" />,
-        },
-      ],
-    },
-    {
-      id: "payments",
-      title: "Payments",
-      icon: <CreditCard className="h-5 w-5 text-teal-600" />,
-      items: [
-        {
-          title: "Invoices & Payments",
-          href: "/dashboard/payments",
-          icon: <Receipt className="h-4 w-4 mr-2" />,
-        },
-        {
-          title: "Process Refunds",
-          href: "/dashboard/payments/refunds",
-          icon: <RefreshCcw className="h-4 w-4 mr-2" />,
-        },
-        {
-          title: "Payment Settings",
-          href: "/dashboard/settings/payment",
-          icon: <DollarSign className="h-4 w-4 mr-2" />,
-        },
-      ],
-    },
-    {
-      id: "notifications",
-      title: "Notifications",
-      icon: <Bell className="h-5 w-5 text-teal-600" />,
-      items: [
-        {
-          title: "Appointment Reminders",
-          href: "/dashboard/notifications/reminders",
-          icon: <BellRing className="h-4 w-4 mr-2" />,
-        },
-        {
-          title: "Message Templates",
-          href: "/dashboard/notifications/templates",
-          icon: <MessageSquare className="h-4 w-4 mr-2" />,
-        },
-        {
-          title: "Notification History",
-          href: "/dashboard/notifications/history",
-          icon: <FileText className="h-4 w-4 mr-2" />,
-        },
-      ],
-    },
-    {
-      id: "analytics",
-      title: "Analytics",
-      icon: <BarChart2 className="h-5 w-5 text-teal-600" />,
-      items: [
-        {
-          title: "Appointment Reports",
-          href: "/dashboard/analytics/appointments",
-          icon: <LineChart className="h-4 w-4 mr-2" />,
-        },
-        {
-          title: "Patient Reports",
-          href: "/dashboard/analytics/patients",
-          icon: <PieChart className="h-4 w-4 mr-2" />,
-        },
-        {
-          title: "Reminder Reports",
-          href: "/dashboard/analytics/reminders",
-          icon: <Activity className="h-4 w-4 mr-2" />,
-        },
-      ],
-    },
-    {
-      id: "settings",
-      title: "Settings",
-      icon: <Settings className="h-5 w-5 text-teal-600" />,
-      items: [
-        {
-          title: "Profile Settings",
-          href: "/dashboard/settings/profile",
-          icon: <User className="h-4 w-4 mr-2" />,
-        },
-        {
-          title: "Clinic Information",
-          href: "/dashboard/settings/clinic",
-          icon: <Building className="h-4 w-4 mr-2" />,
-        },
-        {
-          title: "Booking Rules",
-          href: "/dashboard/settings/booking-rules",
-          icon: <ListChecks className="h-4 w-4 mr-2" />,
-        },
-        {
-          title: "Platform Settings",
-          href: "/dashboard/settings/platform",
-          icon: <Globe className="h-4 w-4 mr-2" />,
-        },
-      ],
-    },
-  ]
+  const isActive = (path: string) => {
+    return pathname === path
+  }
 
   return (
-    <div className="w-64 bg-white border-r border-gray-200 min-h-screen flex flex-col">
+    <div className="w-64 bg-white border-r border-gray-200 h-screen overflow-y-auto flex flex-col">
       <div className="p-4 border-b border-gray-200">
-        <h2 className="text-xl font-bold text-blue-600">BookingLink</h2>
-        <p className="text-xs text-gray-500 mt-1">Clinic Management Portal</p>
+        <Link href="/dashboard" className="flex items-center">
+          <span className="text-xl font-bold text-blue-600">BookingLink</span>
+        </Link>
       </div>
 
-      <div className="flex-1 overflow-y-auto py-4">
-        <nav className="px-2 space-y-1">
-          {menuSections.map((section) => (
-            <div key={section.id}>
-              <button
-                onClick={() => toggleMenu(section.id)}
-                className="w-full flex items-center justify-between px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-blue-600 rounded-md"
-              >
-                <div className="flex items-center">
-                  {section.icon}
-                  <span className="ml-3 font-medium">{section.title}</span>
-                </div>
-                {openMenus[section.id] ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-              </button>
-              {openMenus[section.id] && (
-                <div className="pl-10 space-y-1 mt-1">
-                  {section.items.map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className={cn(
-                        "block px-4 py-2 text-sm rounded-md flex items-center",
-                        pathname === item.href
-                          ? "bg-blue-50 text-blue-600"
-                          : "text-gray-600 hover:bg-gray-100 hover:text-blue-600",
-                      )}
-                    >
-                      {item.icon}
-                      {item.title}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
+      <nav className="flex-1 p-4 space-y-1">
+        {/* Dashboard */}
+        <Link
+          href="/dashboard"
+          className={`flex items-center px-3 py-2 rounded-md ${
+            isActive("/dashboard") ? "bg-blue-100 text-blue-600" : "text-gray-700 hover:bg-gray-100"
+          }`}
+        >
+          <LayoutDashboard className="h-5 w-5 mr-3" />
+          <span>Dashboard</span>
+        </Link>
 
-          {/* Help & Support */}
-          <Link
-            href="/dashboard/help"
-            className={cn(
-              "flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-blue-600 rounded-md",
-              pathname === "/dashboard/help" && "bg-blue-50 text-blue-600",
-            )}
+        {/* Patients */}
+        <div>
+          <button
+            onClick={() => toggleMenu("patients")}
+            className="flex items-center justify-between w-full px-3 py-2 text-left rounded-md text-gray-700 hover:bg-gray-100"
           >
-            <HelpCircle className="mr-3 h-5 w-5" />
-            Help & Support
-          </Link>
-        </nav>
-      </div>
+            <div className="flex items-center">
+              <Users className="h-5 w-5 mr-3" />
+              <span>Patients</span>
+            </div>
+            {openMenus.patients ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+          </button>
+          {openMenus.patients && (
+            <div className="ml-8 space-y-1 mt-1">
+              <Link
+                href="/dashboard/patients"
+                className={`flex items-center px-3 py-2 rounded-md ${
+                  isActive("/dashboard/patients") ? "bg-blue-100 text-blue-600" : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                <span>All Patients</span>
+              </Link>
+              <Link
+                href="/dashboard/patients/new"
+                className={`flex items-center px-3 py-2 rounded-md ${
+                  isActive("/dashboard/patients/new") ? "bg-blue-100 text-blue-600" : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                <span>Add Patient</span>
+              </Link>
+              <Link
+                href="/dashboard/patients/import"
+                className={`flex items-center px-3 py-2 rounded-md ${
+                  isActive("/dashboard/patients/import")
+                    ? "bg-blue-100 text-blue-600"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                <span>Import Patients</span>
+              </Link>
+            </div>
+          )}
+        </div>
+
+        {/* Appointments */}
+        <div>
+          <button
+            onClick={() => toggleMenu("appointments")}
+            className="flex items-center justify-between w-full px-3 py-2 text-left rounded-md text-gray-700 hover:bg-gray-100"
+          >
+            <div className="flex items-center">
+              <Calendar className="h-5 w-5 mr-3" />
+              <span>Appointments</span>
+            </div>
+            {openMenus.appointments ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+          </button>
+          {openMenus.appointments && (
+            <div className="ml-8 space-y-1 mt-1">
+              <Link
+                href="/dashboard/appointments/calendar"
+                className={`flex items-center px-3 py-2 rounded-md ${
+                  isActive("/dashboard/appointments/calendar")
+                    ? "bg-blue-100 text-blue-600"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                <span>Calendar</span>
+              </Link>
+              <Link
+                href="/dashboard/appointments/new"
+                className={`flex items-center px-3 py-2 rounded-md ${
+                  isActive("/dashboard/appointments/new")
+                    ? "bg-blue-100 text-blue-600"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                <span>Book Appointment</span>
+              </Link>
+              <Link
+                href="/dashboard/appointments/upcoming"
+                className={`flex items-center px-3 py-2 rounded-md ${
+                  isActive("/dashboard/appointments/upcoming")
+                    ? "bg-blue-100 text-blue-600"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                <span>Upcoming</span>
+              </Link>
+              <Link
+                href="/dashboard/appointments/past"
+                className={`flex items-center px-3 py-2 rounded-md ${
+                  isActive("/dashboard/appointments/past")
+                    ? "bg-blue-100 text-blue-600"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                <span>Past</span>
+              </Link>
+            </div>
+          )}
+        </div>
+
+        {/* Staff & Providers */}
+        <div>
+          <button
+            onClick={() => toggleMenu("staff")}
+            className="flex items-center justify-between w-full px-3 py-2 text-left rounded-md text-gray-700 hover:bg-gray-100"
+          >
+            <div className="flex items-center">
+              <UserCog className="h-5 w-5 mr-3" />
+              <span>Staff & Providers</span>
+            </div>
+            {openMenus.staff ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+          </button>
+          {openMenus.staff && (
+            <div className="ml-8 space-y-1 mt-1">
+              <Link
+                href="/dashboard/providers"
+                className={`flex items-center px-3 py-2 rounded-md ${
+                  isActive("/dashboard/providers") ? "bg-blue-100 text-blue-600" : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                <span>All Staff</span>
+              </Link>
+              <Link
+                href="/dashboard/settings/availability"
+                className={`flex items-center px-3 py-2 rounded-md ${
+                  isActive("/dashboard/settings/availability")
+                    ? "bg-blue-100 text-blue-600"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                <span>Availability</span>
+              </Link>
+              <Link
+                href="/dashboard/settings/roles"
+                className={`flex items-center px-3 py-2 rounded-md ${
+                  isActive("/dashboard/settings/roles")
+                    ? "bg-blue-100 text-blue-600"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                <span>Roles & Permissions</span>
+              </Link>
+            </div>
+          )}
+        </div>
+
+        {/* Payments */}
+        <div>
+          <button
+            onClick={() => toggleMenu("payments")}
+            className="flex items-center justify-between w-full px-3 py-2 text-left rounded-md text-gray-700 hover:bg-gray-100"
+          >
+            <div className="flex items-center">
+              <CreditCard className="h-5 w-5 mr-3" />
+              <span>Payments</span>
+            </div>
+            {openMenus.payments ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+          </button>
+          {openMenus.payments && (
+            <div className="ml-8 space-y-1 mt-1">
+              <Link
+                href="/dashboard/payments"
+                className={`flex items-center px-3 py-2 rounded-md ${
+                  isActive("/dashboard/payments") ? "bg-blue-100 text-blue-600" : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                <span>Invoices</span>
+              </Link>
+              <Link
+                href="/dashboard/payments/refunds"
+                className={`flex items-center px-3 py-2 rounded-md ${
+                  isActive("/dashboard/payments/refunds")
+                    ? "bg-blue-100 text-blue-600"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                <span>Refunds</span>
+              </Link>
+            </div>
+          )}
+        </div>
+
+        {/* Notifications */}
+        <div>
+          <button
+            onClick={() => toggleMenu("notifications")}
+            className="flex items-center justify-between w-full px-3 py-2 text-left rounded-md text-gray-700 hover:bg-gray-100"
+          >
+            <div className="flex items-center">
+              <Bell className="h-5 w-5 mr-3" />
+              <span>Notifications</span>
+            </div>
+            {openMenus.notifications ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+          </button>
+          {openMenus.notifications && (
+            <div className="ml-8 space-y-1 mt-1">
+              <Link
+                href="/dashboard/notifications/reminders"
+                className={`flex items-center px-3 py-2 rounded-md ${
+                  isActive("/dashboard/notifications/reminders")
+                    ? "bg-blue-100 text-blue-600"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                <span>Reminders</span>
+              </Link>
+              <Link
+                href="/dashboard/notifications/templates"
+                className={`flex items-center px-3 py-2 rounded-md ${
+                  isActive("/dashboard/notifications/templates")
+                    ? "bg-blue-100 text-blue-600"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                <span>Templates</span>
+              </Link>
+              <Link
+                href="/dashboard/notifications/history"
+                className={`flex items-center px-3 py-2 rounded-md ${
+                  isActive("/dashboard/notifications/history")
+                    ? "bg-blue-100 text-blue-600"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                <span>History</span>
+              </Link>
+            </div>
+          )}
+        </div>
+
+        {/* Analytics */}
+        <div>
+          <button
+            onClick={() => toggleMenu("analytics")}
+            className="flex items-center justify-between w-full px-3 py-2 text-left rounded-md text-gray-700 hover:bg-gray-100"
+          >
+            <div className="flex items-center">
+              <BarChart3 className="h-5 w-5 mr-3" />
+              <span>Analytics</span>
+            </div>
+            {openMenus.analytics ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+          </button>
+          {openMenus.analytics && (
+            <div className="ml-8 space-y-1 mt-1">
+              <Link
+                href="/dashboard/analytics/appointments"
+                className={`flex items-center px-3 py-2 rounded-md ${
+                  isActive("/dashboard/analytics/appointments")
+                    ? "bg-blue-100 text-blue-600"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                <span>Appointments</span>
+              </Link>
+              <Link
+                href="/dashboard/analytics/patients"
+                className={`flex items-center px-3 py-2 rounded-md ${
+                  isActive("/dashboard/analytics/patients")
+                    ? "bg-blue-100 text-blue-600"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                <span>Patients</span>
+              </Link>
+              <Link
+                href="/dashboard/analytics/reminders"
+                className={`flex items-center px-3 py-2 rounded-md ${
+                  isActive("/dashboard/analytics/reminders")
+                    ? "bg-blue-100 text-blue-600"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                <span>Reminders</span>
+              </Link>
+            </div>
+          )}
+        </div>
+
+        {/* Settings */}
+        <div>
+          <button
+            onClick={() => toggleMenu("settings")}
+            className="flex items-center justify-between w-full px-3 py-2 text-left rounded-md text-gray-700 hover:bg-gray-100"
+          >
+            <div className="flex items-center">
+              <Settings className="h-5 w-5 mr-3" />
+              <span>Settings</span>
+            </div>
+            {openMenus.settings ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+          </button>
+          {openMenus.settings && (
+            <div className="ml-8 space-y-1 mt-1">
+              <Link
+                href="/dashboard/settings/profile"
+                className={`flex items-center px-3 py-2 rounded-md ${
+                  isActive("/dashboard/settings/profile")
+                    ? "bg-blue-100 text-blue-600"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                <span>Profile</span>
+              </Link>
+              <Link
+                href="/dashboard/settings/clinic"
+                className={`flex items-center px-3 py-2 rounded-md ${
+                  isActive("/dashboard/settings/clinic")
+                    ? "bg-blue-100 text-blue-600"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                <span>Clinic Info</span>
+              </Link>
+              <Link
+                href="/dashboard/settings/staff"
+                className={`flex items-center px-3 py-2 rounded-md ${
+                  isActive("/dashboard/settings/staff")
+                    ? "bg-blue-100 text-blue-600"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                <span>Staff</span>
+              </Link>
+              <Link
+                href="/dashboard/settings/appointment-types"
+                className={`flex items-center px-3 py-2 rounded-md ${
+                  isActive("/dashboard/settings/appointment-types")
+                    ? "bg-blue-100 text-blue-600"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                <span>Appointment Types</span>
+              </Link>
+              <Link
+                href="/dashboard/settings/booking-rules"
+                className={`flex items-center px-3 py-2 rounded-md ${
+                  isActive("/dashboard/settings/booking-rules")
+                    ? "bg-blue-100 text-blue-600"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                <span>Booking Rules</span>
+              </Link>
+              <Link
+                href="/dashboard/settings/payment"
+                className={`flex items-center px-3 py-2 rounded-md ${
+                  isActive("/dashboard/settings/payment")
+                    ? "bg-blue-100 text-blue-600"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                <span>Payment</span>
+              </Link>
+              <Link
+                href="/dashboard/settings/platform"
+                className={`flex items-center px-3 py-2 rounded-md ${
+                  isActive("/dashboard/settings/platform")
+                    ? "bg-blue-100 text-blue-600"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                <span>Platform</span>
+              </Link>
+            </div>
+          )}
+        </div>
+
+        {/* Help */}
+        <Link
+          href="/dashboard/help"
+          className={`flex items-center px-3 py-2 rounded-md ${
+            isActive("/dashboard/help") ? "bg-blue-100 text-blue-600" : "text-gray-700 hover:bg-gray-100"
+          }`}
+        >
+          <HelpCircle className="h-5 w-5 mr-3" />
+          <span>Help & Support</span>
+        </Link>
+      </nav>
 
       <div className="p-4 border-t border-gray-200">
-        <Link
-          href="/logout"
-          className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-blue-600 rounded-md"
-        >
-          <LogOut className="mr-3 h-5 w-5" />
-          Sign Out
+        <Link href="/logout" className="flex items-center px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100">
+          <LogOut className="h-5 w-5 mr-3" />
+          <span>Sign Out</span>
         </Link>
       </div>
     </div>

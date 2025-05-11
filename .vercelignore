@@ -1,7 +1,0 @@
-# Exclude problematic routes from Vercel deployment
-app/dashboard/patients
-app/dashboard/patients-new
-app/dashboard/patients/*
-app/dashboard/patients-new/*
-components/patients
-components/patients/*
