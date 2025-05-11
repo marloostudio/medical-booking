@@ -9,11 +9,16 @@ const nextConfig = {
   },
   images: {
     unoptimized: true,
+    domains: ["thebookinglink.com", "v0-medical-booking.vercel.app"],
   },
-  // Fix for cross-origin requests
-  experimental: {
-    allowedDevOrigins: ["localhost:3000", "192.168.5.172:3000"],
-  },
+  // Only apply allowedDevOrigins in development
+  ...(process.env.NODE_ENV === "development"
+    ? {
+        experimental: {
+          allowedDevOrigins: ["localhost:3000", "192.168.5.172:3000"],
+        },
+      }
+    : {}),
   // Simplified webpack config without crypto-browserify
   webpack: (config) => {
     config.resolve.fallback = {
