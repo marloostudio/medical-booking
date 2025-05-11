@@ -10,6 +10,7 @@ import { doc, setDoc, serverTimestamp } from "firebase/firestore"
 import { auth, db } from "@/lib/firebase"
 import { auditService } from "@/services/audit-service"
 import Link from "next/link"
+import { AddressAutocomplete, type AddressDetails } from "@/components/ui/address-autocomplete"
 
 // Password strength indicator component
 const PasswordStrengthIndicator = ({ password }: { password: string }) => {
@@ -122,6 +123,7 @@ export function MultiStepSignup() {
   const [error, setError] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [acceptedTerms, setAcceptedTerms] = useState(false)
+  const [addressDetails, setAddressDetails] = useState<AddressDetails | null>(null)
 
   // Form states
   const [formData, setFormData] = useState({
@@ -224,37 +226,51 @@ export function MultiStepSignup() {
     try {
       // Create user in Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password)
+      const user = userCredential.user
 
-      const uid = userCredential.user.uid
+      // Wait for auth state to be fully updated
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+
+      // Generate a unique clinic ID
+      const clinicId = crypto.randomUUID()
 
       // Create the clinic document
-      const clinicRef = doc(db, "clinics", crypto.randomUUID())
+      const clinicRef = doc(db, "clinics", clinicId)
       await setDoc(clinicRef, {
         name: formData.clinicName,
-        address: formData.clinicAddress,
+        address: addressDetails
+          ? {
+              full: addressDetails.fullAddress,
+              street: addressDetails.street,
+              city: addressDetails.city,
+              state: addressDetails.state,
+              postalCode: addressDetails.postalCode,
+              country: addressDetails.country,
+            }
+          : formData.clinicAddress,
         phone: formData.clinicPhone,
         employeeCount: formData.employeeCount,
-        ownerId: uid,
+        ownerId: user.uid,
         createdAt: serverTimestamp(),
         isActive: true,
         verificationStatus: "pending",
       })
 
       // Create user document
-      await setDoc(doc(db, "users", uid), {
+      await setDoc(doc(db, "users", user.uid), {
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,
         role: "CLINIC_OWNER",
-        clinicId: clinicRef.id,
+        clinicId: clinicId,
         createdAt: serverTimestamp(),
         isEmailVerified: false,
         photoURL: "",
       })
 
       // Log the signup
-      await auditService.logAction(clinicRef.id, {
-        userId: uid,
+      await auditService.logAction(clinicId, {
+        userId: user.uid,
         action: "create",
         resource: "clinic",
         details: `Clinic created: ${formData.clinicName}`,
@@ -263,7 +279,7 @@ export function MultiStepSignup() {
       })
 
       // Send verification email
-      await userCredential.user.sendEmailVerification()
+      await user.sendEmailVerification()
 
       // Redirect to dashboard
       router.push("/dashboard")
@@ -389,16 +405,15 @@ export function MultiStepSignup() {
         {step === 2 && (
           <div className="space-y-4">
             <div>
-              <label htmlFor="clinicAddress" className="block text-sm font-medium text-gray-700">
-                Clinic Address
-              </label>
-              <input
-                type="text"
-                id="clinicAddress"
-                name="clinicAddress"
-                value={formData.clinicAddress}
-                onChange={handleChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              <AddressAutocomplete
+                label="Clinic Address"
+                onAddressSelect={(details) => {
+                  setAddressDetails(details)
+                  setFormData((prev) => ({
+                    ...prev,
+                    clinicAddress: details.fullAddress,
+                  }))
+                }}
                 required
               />
             </div>

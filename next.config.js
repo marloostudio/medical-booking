@@ -1,42 +1,28 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Disable strict mode to reduce potential issues
-  reactStrictMode: false,
-
-  // Ignore build errors to get past the build
+  reactStrictMode: true,
   eslint: {
     ignoreDuringBuilds: true,
   },
   typescript: {
     ignoreBuildErrors: true,
   },
-
-  // Use unoptimized images to avoid image optimization issues
   images: {
     unoptimized: true,
   },
-
-  // Empty experimental object - removed appDir
-  experimental: {},
-
-  // Webpack configuration to handle Node.js polyfills
-  webpack: (config, { isServer }) => {
-    if (!isServer) {
-      // Ensure these Node.js modules are not included in client-side bundles
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        fs: false,
-        net: false,
-        tls: false,
-        crypto: false,
-        stream: false,
-        http: false,
-        https: false,
-        zlib: false,
-        path: false,
-        os: false,
-        util: false,
-      }
+  webpack: (config) => {
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+      net: false,
+      tls: false,
+      crypto: require.resolve("crypto-browserify"),
+      stream: require.resolve("stream-browserify"),
+      path: require.resolve("path-browserify"),
+      zlib: require.resolve("browserify-zlib"),
+      http: require.resolve("stream-http"),
+      https: require.resolve("https-browserify"),
+      os: require.resolve("os-browserify"),
     }
     return config
   },

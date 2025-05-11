@@ -79,7 +79,7 @@ export function AdminSidebar() {
             Dashboard
           </Link>
 
-          {/* Clinics Management */}
+          {/* 1. Clinics Management */}
           <div>
             <button
               onClick={() => toggleMenu("clinics")}
@@ -97,35 +97,47 @@ export function AdminSidebar() {
                   href={`${devPrefix}/clinics/all`}
                   className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-md"
                 >
-                  <List className="inline-block mr-2 h-4 w-4" />
-                  All Clinics
+                  <div className="flex items-center">
+                    <List className="h-4 w-4 mr-2" />
+                    <span>All Clinics</span>
+                  </div>
+                  <div className="pl-6 mt-1 text-xs text-gray-500">Search, filter, view details, edit</div>
                 </Link>
                 <Link
                   href={`${devPrefix}/clinics/add`}
                   className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-md"
                 >
-                  <PlusCircle className="inline-block mr-2 h-4 w-4" />
-                  Add New Clinic
+                  <div className="flex items-center">
+                    <PlusCircle className="h-4 w-4 mr-2" />
+                    <span>Add New Clinic</span>
+                  </div>
+                  <div className="pl-6 mt-1 text-xs text-gray-500">Create clinic, set details, assign owners</div>
                 </Link>
                 <Link
                   href={`${devPrefix}/clinics/pending`}
                   className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-md"
                 >
-                  <Clock className="inline-block mr-2 h-4 w-4" />
-                  Pending Approvals
+                  <div className="flex items-center">
+                    <Clock className="h-4 w-4 mr-2" />
+                    <span>Pending Approvals</span>
+                  </div>
+                  <div className="pl-6 mt-1 text-xs text-gray-500">Approve, reject, request info</div>
                 </Link>
                 <Link
                   href={`${devPrefix}/clinics/settings`}
                   className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-md"
                 >
-                  <Sliders className="inline-block mr-2 h-4 w-4" />
-                  Clinic Settings
+                  <div className="flex items-center">
+                    <Sliders className="h-4 w-4 mr-2" />
+                    <span>Clinic Settings</span>
+                  </div>
+                  <div className="pl-6 mt-1 text-xs text-gray-500">Default settings, configurations</div>
                 </Link>
               </div>
             )}
           </div>
 
-          {/* Users Management */}
+          {/* 2. Users Management */}
           <div>
             <button
               onClick={() => toggleMenu("users")}
@@ -143,42 +155,57 @@ export function AdminSidebar() {
                   href={`${devPrefix}/users/all`}
                   className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-md"
                 >
-                  <List className="inline-block mr-2 h-4 w-4" />
-                  All Users
+                  <div className="flex items-center">
+                    <List className="h-4 w-4 mr-2" />
+                    <span>All Users</span>
+                  </div>
+                  <div className="pl-6 mt-1 text-xs text-gray-500">Search, filter, view profiles, reset passwords</div>
                 </Link>
                 <Link
                   href={`${devPrefix}/users/admins`}
                   className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-md"
                 >
-                  <UserCog className="inline-block mr-2 h-4 w-4" />
-                  Admins
+                  <div className="flex items-center">
+                    <UserCog className="h-4 w-4 mr-2" />
+                    <span>Admins</span>
+                  </div>
+                  <div className="pl-6 mt-1 text-xs text-gray-500">Manage admin users and permissions</div>
                 </Link>
                 <Link
                   href={`${devPrefix}/users/owners`}
                   className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-md"
                 >
-                  <UserPlus className="inline-block mr-2 h-4 w-4" />
-                  Clinic Owners
+                  <div className="flex items-center">
+                    <UserPlus className="h-4 w-4 mr-2" />
+                    <span>Clinic Owners</span>
+                  </div>
+                  <div className="pl-6 mt-1 text-xs text-gray-500">View, add, remove clinic owners</div>
                 </Link>
                 <Link
                   href={`${devPrefix}/users/roles`}
                   className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-md"
                 >
-                  <UserCheck className="inline-block mr-2 h-4 w-4" />
-                  Manage User Roles
+                  <div className="flex items-center">
+                    <UserCheck className="h-4 w-4 mr-2" />
+                    <span>Manage User Roles</span>
+                  </div>
+                  <div className="pl-6 mt-1 text-xs text-gray-500">Create, modify roles and assign to users</div>
                 </Link>
                 <Link
                   href={`${devPrefix}/users/permissions`}
                   className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-md"
                 >
-                  <Lock className="inline-block mr-2 h-4 w-4" />
-                  User Permissions
+                  <div className="flex items-center">
+                    <Lock className="h-4 w-4 mr-2" />
+                    <span>User Permissions</span>
+                  </div>
+                  <div className="pl-6 mt-1 text-xs text-gray-500">Grant specific permissions, view logs</div>
                 </Link>
               </div>
             )}
           </div>
 
-          {/* Billing & Subscriptions */}
+          {/* 3. Billing & Subscriptions */}
           <div>
             <button
               onClick={() => toggleMenu("billing")}
@@ -196,49 +223,67 @@ export function AdminSidebar() {
                   href={`${devPrefix}/billing/subscriptions`}
                   className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-md"
                 >
-                  <RefreshCw className="inline-block mr-2 h-4 w-4" />
-                  Subscriptions
+                  <div className="flex items-center">
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    <span>Subscriptions</span>
+                  </div>
+                  <div className="pl-6 mt-1 text-xs text-gray-500">Active, canceled, pending subscriptions</div>
                 </Link>
                 <Link
                   href={`${devPrefix}/billing/invoices`}
                   className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-md"
                 >
-                  <FileText className="inline-block mr-2 h-4 w-4" />
-                  Invoices
+                  <div className="flex items-center">
+                    <FileText className="h-4 w-4 mr-2" />
+                    <span>Invoices</span>
+                  </div>
+                  <div className="pl-6 mt-1 text-xs text-gray-500">View, download, email invoices</div>
                 </Link>
                 <Link
                   href={`${devPrefix}/billing/plans`}
                   className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-md"
                 >
-                  <Package className="inline-block mr-2 h-4 w-4" />
-                  Manage Plans
+                  <div className="flex items-center">
+                    <Package className="h-4 w-4 mr-2" />
+                    <span>Manage Plans</span>
+                  </div>
+                  <div className="pl-6 mt-1 text-xs text-gray-500">Create, edit, delete subscription plans</div>
                 </Link>
                 <Link
                   href={`${devPrefix}/billing/analytics`}
                   className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-md"
                 >
-                  <Activity className="inline-block mr-2 h-4 w-4" />
-                  Analytics
+                  <div className="flex items-center">
+                    <Activity className="h-4 w-4 mr-2" />
+                    <span>Analytics</span>
+                  </div>
+                  <div className="pl-6 mt-1 text-xs text-gray-500">Revenue trends, subscription breakdown</div>
                 </Link>
                 <Link
                   href={`${devPrefix}/billing/history`}
                   className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-md"
                 >
-                  <FileDigit className="inline-block mr-2 h-4 w-4" />
-                  Payments History
+                  <div className="flex items-center">
+                    <FileDigit className="h-4 w-4 mr-2" />
+                    <span>Payments History</span>
+                  </div>
+                  <div className="pl-6 mt-1 text-xs text-gray-500">All payments, issue refunds</div>
                 </Link>
                 <Link
                   href={`${devPrefix}/billing/refunds`}
                   className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-md"
                 >
-                  <DollarSign className="inline-block mr-2 h-4 w-4" />
-                  Refunds & Disputes
+                  <div className="flex items-center">
+                    <DollarSign className="h-4 w-4 mr-2" />
+                    <span>Refunds & Disputes</span>
+                  </div>
+                  <div className="pl-6 mt-1 text-xs text-gray-500">Track and resolve billing disputes</div>
                 </Link>
               </div>
             )}
           </div>
 
-          {/* Application Settings */}
+          {/* 4. Application Settings */}
           <div>
             <button
               onClick={() => toggleMenu("settings")}
@@ -256,42 +301,57 @@ export function AdminSidebar() {
                   href={`${devPrefix}/settings/general`}
                   className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-md"
                 >
-                  <Globe className="inline-block mr-2 h-4 w-4" />
-                  General Settings
+                  <div className="flex items-center">
+                    <Globe className="h-4 w-4 mr-2" />
+                    <span>General Settings</span>
+                  </div>
+                  <div className="pl-6 mt-1 text-xs text-gray-500">System emails, timezone, language, branding</div>
                 </Link>
                 <Link
                   href={`${devPrefix}/settings/clinic`}
                   className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-md"
                 >
-                  <Calendar className="inline-block mr-2 h-4 w-4" />
-                  Clinic Settings
+                  <div className="flex items-center">
+                    <Calendar className="h-4 w-4 mr-2" />
+                    <span>Clinic Settings</span>
+                  </div>
+                  <div className="pl-6 mt-1 text-xs text-gray-500">Default hours, holidays, cancellation rules</div>
                 </Link>
                 <Link
                   href={`${devPrefix}/settings/notifications`}
                   className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-md"
                 >
-                  <Bell className="inline-block mr-2 h-4 w-4" />
-                  Notifications
+                  <div className="flex items-center">
+                    <Bell className="h-4 w-4 mr-2" />
+                    <span>Notifications</span>
+                  </div>
+                  <div className="pl-6 mt-1 text-xs text-gray-500">Email templates, automatic alerts</div>
                 </Link>
                 <Link
                   href={`${devPrefix}/settings/security`}
                   className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-md"
                 >
-                  <Shield className="inline-block mr-2 h-4 w-4" />
-                  Security & Compliance
+                  <div className="flex items-center">
+                    <Shield className="h-4 w-4 mr-2" />
+                    <span>Security & Compliance</span>
+                  </div>
+                  <div className="pl-6 mt-1 text-xs text-gray-500">2FA, password policies, GDPR settings</div>
                 </Link>
                 <Link
                   href={`${devPrefix}/settings/audit`}
                   className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-md"
                 >
-                  <FileDigit className="inline-block mr-2 h-4 w-4" />
-                  Audit Logs
+                  <div className="flex items-center">
+                    <FileDigit className="h-4 w-4 mr-2" />
+                    <span>Audit Logs</span>
+                  </div>
+                  <div className="pl-6 mt-1 text-xs text-gray-500">Track system and user actions</div>
                 </Link>
               </div>
             )}
           </div>
 
-          {/* Support & Helpdesk */}
+          {/* 5. Support & Helpdesk */}
           <div>
             <button
               onClick={() => toggleMenu("support")}
@@ -309,35 +369,47 @@ export function AdminSidebar() {
                   href={`${devPrefix}/support/tickets`}
                   className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-md"
                 >
-                  <Ticket className="inline-block mr-2 h-4 w-4" />
-                  Support Tickets
+                  <div className="flex items-center">
+                    <Ticket className="h-4 w-4 mr-2" />
+                    <span>Support Tickets</span>
+                  </div>
+                  <div className="pl-6 mt-1 text-xs text-gray-500">Assign, prioritize, resolve tickets</div>
                 </Link>
                 <Link
                   href={`${devPrefix}/support/faqs`}
                   className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-md"
                 >
-                  <MessageSquare className="inline-block mr-2 h-4 w-4" />
-                  FAQs
+                  <div className="flex items-center">
+                    <MessageSquare className="h-4 w-4 mr-2" />
+                    <span>FAQs</span>
+                  </div>
+                  <div className="pl-6 mt-1 text-xs text-gray-500">Edit, add, delete, categorize FAQs</div>
                 </Link>
                 <Link
                   href={`${devPrefix}/support/contact`}
                   className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-md"
                 >
-                  <PhoneCall className="inline-block mr-2 h-4 w-4" />
-                  Contact Support
+                  <div className="flex items-center">
+                    <PhoneCall className="h-4 w-4 mr-2" />
+                    <span>Contact Support</span>
+                  </div>
+                  <div className="pl-6 mt-1 text-xs text-gray-500">Direct contact info, help center links</div>
                 </Link>
                 <Link
                   href={`${devPrefix}/support/status`}
                   className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-md"
                 >
-                  <AlertCircle className="inline-block mr-2 h-4 w-4" />
-                  System Status
+                  <div className="flex items-center">
+                    <AlertCircle className="h-4 w-4 mr-2" />
+                    <span>System Status</span>
+                  </div>
+                  <div className="pl-6 mt-1 text-xs text-gray-500">Server uptime, maintenance notifications</div>
                 </Link>
               </div>
             )}
           </div>
 
-          {/* Advanced Analytics */}
+          {/* 6. Advanced Analytics */}
           <div>
             <button
               onClick={() => toggleMenu("analytics")}
@@ -355,28 +427,37 @@ export function AdminSidebar() {
                   href={`${devPrefix}/analytics/system`}
                   className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-md"
                 >
-                  <Activity className="inline-block mr-2 h-4 w-4" />
-                  System Analytics
+                  <div className="flex items-center">
+                    <Activity className="h-4 w-4 mr-2" />
+                    <span>System Analytics</span>
+                  </div>
+                  <div className="pl-6 mt-1 text-xs text-gray-500">App performance, response times, server health</div>
                 </Link>
                 <Link
                   href={`${devPrefix}/analytics/users`}
                   className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-md"
                 >
-                  <Users className="inline-block mr-2 h-4 w-4" />
-                  User Analytics
+                  <div className="flex items-center">
+                    <Users className="h-4 w-4 mr-2" />
+                    <span>User Analytics</span>
+                  </div>
+                  <div className="pl-6 mt-1 text-xs text-gray-500">User behavior, engagement, feature usage</div>
                 </Link>
                 <Link
                   href={`${devPrefix}/analytics/usage`}
                   className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-md"
                 >
-                  <PieChart className="inline-block mr-2 h-4 w-4" />
-                  App Usage
+                  <div className="flex items-center">
+                    <PieChart className="h-4 w-4 mr-2" />
+                    <span>App Usage</span>
+                  </div>
+                  <div className="pl-6 mt-1 text-xs text-gray-500">Usage patterns, peak times, feature adoption</div>
                 </Link>
               </div>
             )}
           </div>
 
-          {/* Marketing & Communication */}
+          {/* 7. Marketing & Communication */}
           <div>
             <button
               onClick={() => toggleMenu("marketing")}
@@ -394,15 +475,21 @@ export function AdminSidebar() {
                   href={`${devPrefix}/marketing/promotions`}
                   className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-md"
                 >
-                  <Tag className="inline-block mr-2 h-4 w-4" />
-                  Promotions
+                  <div className="flex items-center">
+                    <Tag className="h-4 w-4 mr-2" />
+                    <span>Campaigns & Promotions</span>
+                  </div>
+                  <div className="pl-6 mt-1 text-xs text-gray-500">Create promotional campaigns, discount codes</div>
                 </Link>
                 <Link
-                  href={`${devPrefix}/marketing/emails`}
+                  href={`${devPrefix}/marketing/templates`}
                   className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-md"
                 >
-                  <Send className="inline-block mr-2 h-4 w-4" />
-                  Emails & Communications
+                  <div className="flex items-center">
+                    <Send className="h-4 w-4 mr-2" />
+                    <span>Communication Templates</span>
+                  </div>
+                  <div className="pl-6 mt-1 text-xs text-gray-500">Email templates, push notifications, SMS</div>
                 </Link>
               </div>
             )}

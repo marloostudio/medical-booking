@@ -14,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { patientService } from "@/services/patient-service"
 import { useToast } from "@/components/ui/use-toast"
 import { useRouter } from "next/navigation"
+import { AddressAutocompletePatient } from "@/components/ui/address-autocomplete-patient"
 
 // Define the form schema
 const patientFormSchema = z.object({
@@ -172,6 +173,21 @@ export function AddPatientForm({ clinicId }: { clinicId: string }) {
     form.setValue(`medicalHistory.${field}` as any, newValues)
   }
 
+  // Handle address autocomplete selection
+  const handleAddressSelect = (addressData: {
+    street: string
+    city: string
+    state: string
+    postalCode: string
+    country: string
+  }) => {
+    form.setValue("address.street", addressData.street)
+    form.setValue("address.city", addressData.city)
+    form.setValue("address.state", addressData.state)
+    form.setValue("address.postalCode", addressData.postalCode)
+    form.setValue("address.country", addressData.country)
+  }
+
   return (
     <Card className="w-full">
       <CardHeader>
@@ -300,9 +316,12 @@ export function AddPatientForm({ clinicId }: { clinicId: string }) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Street Address</FormLabel>
-                      <FormControl>
-                        <Input placeholder="123 Main St" {...field} />
-                      </FormControl>
+                      <AddressAutocompletePatient
+                        value={field.value}
+                        onChange={field.onChange}
+                        onAddressSelect={handleAddressSelect}
+                        placeholder="Start typing your address..."
+                      />
                       <FormMessage />
                     </FormItem>
                   )}

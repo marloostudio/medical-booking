@@ -1,9 +1,10 @@
+"use client"
+
 import { PageTemplate, PageCard } from "@/components/dashboard/page-template"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer } from "recharts"
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer, Tooltip } from "recharts"
 
 // Sample data - would normally come from your database
 const performanceData = [
@@ -83,35 +84,18 @@ export default function PerformanceAnalyticsPage() {
         <TabsContent value="trends">
           <PageCard title="Performance Trends" description="6-month overview of key performance metrics">
             <div className="h-[400px] w-full">
-              <ChartContainer
-                config={{
-                  appointments: {
-                    label: "Appointments",
-                    color: "hsl(var(--chart-1))",
-                  },
-                  utilization: {
-                    label: "Utilization %",
-                    color: "hsl(var(--chart-2))",
-                  },
-                  revenue: {
-                    label: "Revenue ($100s)",
-                    color: "hsl(var(--chart-3))",
-                  },
-                }}
-              >
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={performanceData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
-                    <YAxis />
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                    <Legend />
-                    <Line type="monotone" dataKey="appointments" stroke="var(--color-appointments)" strokeWidth={2} />
-                    <Line type="monotone" dataKey="utilization" stroke="var(--color-utilization)" strokeWidth={2} />
-                    <Line type="monotone" dataKey="revenue" stroke="var(--color-revenue)" strokeWidth={2} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </ChartContainer>
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={performanceData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Line type="monotone" dataKey="appointments" stroke="#8884d8" strokeWidth={2} name="Appointments" />
+                  <Line type="monotone" dataKey="utilization" stroke="#82ca9d" strokeWidth={2} name="Utilization %" />
+                  <Line type="monotone" dataKey="revenue" stroke="#ffc658" strokeWidth={2} name="Revenue ($100s)" />
+                </LineChart>
+              </ResponsiveContainer>
             </div>
           </PageCard>
         </TabsContent>

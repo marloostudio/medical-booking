@@ -13,6 +13,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { auth, db } from "@/lib/firebase"
 import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth"
 import { doc, setDoc, serverTimestamp } from "firebase/firestore"
+import { AddressAutocomplete, type AddressDetails } from "@/components/ui/address-autocomplete"
 
 type SignupFormData = {
   clinicName: string
@@ -46,6 +47,7 @@ export default function MultiStepSignup() {
     zipCode: "",
   })
   const [errors, setErrors] = useState<Partial<SignupFormData>>({})
+  const [addressDetails, setAddressDetails] = useState<AddressDetails | null>(null)
 
   const updateFormData = (field: keyof SignupFormData, value: string) => {
     setFormData((prev) => ({
@@ -156,8 +158,40 @@ export default function MultiStepSignup() {
       const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password)
       const user = userCredential.user
 
-      // Create clinic in Firestore
-      const clinicId = await createClinic(user.uid)
+      // Wait for auth state to be fully updated
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+
+      // Generate a unique clinic ID
+      const clinicId = `clinic_${Date.now()}`
+
+      // Create clinic document
+      await setDoc(doc(db, "clinics", clinicId), {
+        name: formData.clinicName,
+        ownerId: user.uid,
+        address: addressDetails
+          ? {
+              full: addressDetails.fullAddress,
+              street: addressDetails.street,
+              city: addressDetails.city,
+              state: addressDetails.state,
+              postalCode: addressDetails.postalCode,
+              country: addressDetails.country,
+            }
+          : {
+              street: formData.address,
+              city: formData.city,
+              state: formData.state,
+              zipCode: formData.zipCode,
+            },
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        status: "active",
+        subscription: {
+          plan: "basic",
+          status: "trial",
+          trialEndsAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+        },
+      })
 
       // Create user document in Firestore
       await setDoc(doc(db, "users", user.uid), {
@@ -310,49 +344,20 @@ export default function MultiStepSignup() {
             {step === 3 && (
               <>
                 <div className="space-y-2">
-                  <Label htmlFor="address">Address</Label>
-                  <Input
-                    id="address"
-                    value={formData.address}
-                    onChange={(e) => updateFormData("address", e.target.value)}
-                    placeholder="123 Main St"
+                  <AddressAutocomplete
+                    label="Address"
+                    onAddressSelect={(details) => {
+                      setAddressDetails(details)
+                      setFormData((prev) => ({
+                        ...prev,
+                        address: details.street,
+                        city: details.city,
+                        state: details.state,
+                        zipCode: details.postalCode,
+                      }))
+                    }}
+                    required
                   />
-                  {errors.address && <p className="text-sm text-red-500">{errors.address}</p>}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="city">City</Label>
-                  <Input
-                    id="city"
-                    value={formData.city}
-                    onChange={(e) => updateFormData("city", e.target.value)}
-                    placeholder="City"
-                  />
-                  {errors.city && <p className="text-sm text-red-500">{errors.city}</p>}
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="state">State</Label>
-                    <Input
-                      id="state"
-                      value={formData.state}
-                      onChange={(e) => updateFormData("state", e.target.value)}
-                      placeholder="State"
-                    />
-                    {errors.state && <p className="text-sm text-red-500">{errors.state}</p>}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="zipCode">ZIP Code</Label>
-                    <Input
-                      id="zipCode"
-                      value={formData.zipCode}
-                      onChange={(e) => updateFormData("zipCode", e.target.value)}
-                      placeholder="ZIP Code"
-                    />
-                    {errors.zipCode && <p className="text-sm text-red-500">{errors.zipCode}</p>}
-                  </div>
                 </div>
               </>
             )}
