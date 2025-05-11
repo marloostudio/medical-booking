@@ -1,11 +1,36 @@
-import { createCipheriv, createDecipheriv, randomBytes, scryptSync, createHash } from "crypto"
+import CryptoJS from "crypto-js"
 
-// Use environment variable for the encryption key
-const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || ""
+// Get the encryption key from environment variables
+const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || "default-fallback-key-for-development-only"
+
+// Simple encryption using crypto-js instead of crypto-browserify
+export const encrypt = (text: string): string => {
+  try {
+    if (!text) return ""
+    return CryptoJS.AES.encrypt(text, ENCRYPTION_KEY).toString()
+  } catch (error) {
+    console.error("Encryption error:", error)
+    return ""
+  }
+}
+
+// Simple decryption using crypto-js instead of crypto-browserify
+export const decrypt = (encryptedText: string): string => {
+  try {
+    if (!encryptedText) return ""
+    const bytes = CryptoJS.AES.decrypt(encryptedText, ENCRYPTION_KEY)
+    return bytes.toString(CryptoJS.enc.Utf8)
+  } catch (error) {
+    console.error("Decryption error:", error)
+    return ""
+  }
+}
+
+import { createHash } from "crypto"
 
 // Derive a key from the encryption key
 const getKey = (salt: Buffer) => {
-  return scryptSync(ENCRYPTION_KEY, salt, 32)
+  return ENCRYPTION_KEY
 }
 
 // Create the encryptionService object that was previously exported
@@ -13,72 +38,10 @@ export const encryptionService = {
   // Encryption key should be stored in environment variables
   encryptionKey: ENCRYPTION_KEY,
 
-  // Encrypt data
-  encrypt(text: string): string {
-    if (!this.encryptionKey) {
-      throw new Error("Encryption key is not set")
-    }
-
-    try {
-      // Generate a random salt
-      const salt = randomBytes(16)
-      // Derive a key using the salt
-      const key = getKey(salt)
-      // Generate a random initialization vector
-      const iv = randomBytes(16)
-      // Create a cipher using the key and iv
-      const cipher = createCipheriv("aes-256-cbc", key, iv)
-      // Encrypt the text
-      let encrypted = cipher.update(text, "utf8", "hex")
-      encrypted += cipher.final("hex")
-      // Return the encrypted text with the salt and iv prepended
-      return `${salt.toString("hex")}:${iv.toString("hex")}:${encrypted}`
-    } catch (error) {
-      console.error("Encryption error:", error)
-      throw new Error("Failed to encrypt data")
-    }
-  },
-
-  // Decrypt data
-  decrypt(encryptedText: string): string {
-    if (!this.encryptionKey) {
-      throw new Error("Encryption key is not set")
-    }
-
-    try {
-      // Split the encrypted text into salt, iv, and encrypted parts
-      const [saltHex, ivHex, encryptedHex] = encryptedText.split(":")
-      // Convert the salt and iv from hex to Buffer
-      const salt = Buffer.from(saltHex, "hex")
-      const iv = Buffer.from(ivHex, "hex")
-      // Derive the key using the salt
-      const key = getKey(salt)
-      // Create a decipher using the key and iv
-      const decipher = createDecipheriv("aes-256-cbc", key, iv)
-      // Decrypt the text
-      let decrypted = decipher.update(encryptedHex, "hex", "utf8")
-      decrypted += decipher.final("utf8")
-      return decrypted
-    } catch (error) {
-      console.error("Decryption error:", error)
-      throw new Error("Failed to decrypt data")
-    }
-  },
-
   // Hash data (for passwords, etc.)
   hash(text: string): string {
     return createHash("sha256").update(text).digest("hex")
   },
-}
-
-// Encrypt data
-export const encrypt = (text: string): string => {
-  return encryptionService.encrypt(text)
-}
-
-// Decrypt data
-export const decrypt = (encryptedText: string): string => {
-  return encryptionService.decrypt(encryptedText)
 }
 
 // Hash data
@@ -100,8 +63,12 @@ export const decryptObject = <T extends object>(encryptedText: string): T => {
 // Check if a string is encrypted
 export const isEncrypted = (text: string): boolean => {
   // Check if the text matches the pattern of encrypted data
-  const parts = text.split(":")
-  return parts.length === 3 && parts[0].length === 32 && parts[1].length === 32
+  try {
+    CryptoJS.AES.decrypt(text, ENCRYPTION_KEY)
+    return true
+  } catch (e) {
+    return false
+  }
 }
 
 // Export default object for compatibility

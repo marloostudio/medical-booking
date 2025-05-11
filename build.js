@@ -1,9 +1,7 @@
 const { execSync } = require("child_process")
 
-console.log("Ensuring polyfills are installed...")
+console.log("Starting build process...")
 try {
-  execSync("node install-polyfills.js", { stdio: "inherit" })
-  console.log("Starting build process...")
   execSync("next build", { stdio: "inherit" })
   console.log("Build completed successfully!")
 } catch (error) {
