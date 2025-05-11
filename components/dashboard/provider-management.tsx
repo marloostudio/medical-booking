@@ -8,6 +8,7 @@ import { collection, doc, getDoc, getDocs, addDoc, updateDoc, deleteDoc, serverT
 import { auth, db } from "@/lib/firebase"
 import { User, Phone, Mail, Calendar, Plus, Edit, Trash2, Save, X, AlertCircle } from "lucide-react"
 import { auditService } from "@/services/audit-service"
+import { useSession } from "next-auth/react"
 
 interface Provider {
   id: string
@@ -52,6 +53,7 @@ const emptyProvider: Omit<Provider, "id" | "createdAt" | "updatedAt"> = {
 
 export default function ProviderManagement() {
   const router = useRouter()
+  const { data: session, status } = useSession()
   const [loading, setLoading] = useState(true)
   const [providers, setProviders] = useState<Provider[]>([])
   const [clinicId, setClinicId] = useState("")
@@ -67,6 +69,29 @@ export default function ProviderManagement() {
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
 
   useEffect(() => {
+    // First check if we have a session from NextAuth
+    if (status === "loading") return
+
+    if (session) {
+      // If we have a session, use that
+      const userClinicId = session.user?.clinicId as string
+      const userId = session.user?.id as string
+
+      if (!userClinicId) {
+        setError("No clinic associated with this user")
+        setLoading(false)
+        return
+      }
+
+      setClinicId(userClinicId)
+      setUserId(userId)
+
+      // Fetch providers
+      fetchProviders(userClinicId)
+      return
+    }
+
+    // Fallback to Firebase auth if NextAuth session is not available
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (!user) {
         router.push("/login")
@@ -102,10 +127,11 @@ export default function ProviderManagement() {
     })
 
     return () => unsubscribe()
-  }, [router])
+  }, [router, session, status])
 
   const fetchProviders = async (clinicId: string) => {
     try {
+      setLoading(true)
       const providersRef = collection(db, "clinics", clinicId, "providers")
       const providersSnapshot = await getDocs(providersRef)
 
@@ -122,8 +148,12 @@ export default function ProviderManagement() {
     } catch (error: any) {
       console.error("Error fetching providers:", error)
       setError(error.message || "Failed to fetch providers")
+    } finally {
+      setLoading(false)
     }
   }
+
+  // Rest of the component code remains the same...
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
