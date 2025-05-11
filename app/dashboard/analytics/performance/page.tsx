@@ -5,17 +5,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer } from "recharts"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 
-export default function PerformanceAnalyticsPage() {
-  // Sample data - would normally come from your database
-  const performanceData = [
-    { month: "Jan", appointments: 120, utilization: 75, revenue: 15000 },
-    { month: "Feb", appointments: 135, utilization: 78, revenue: 16500 },
-    { month: "Mar", appointments: 150, utilization: 82, revenue: 18000 },
-    { month: "Apr", appointments: 165, utilization: 85, revenue: 19500 },
-    { month: "May", appointments: 180, utilization: 88, revenue: 21000 },
-    { month: "Jun", appointments: 195, utilization: 90, revenue: 22500 },
-  ]
+// Sample data - would normally come from your database
+const performanceData = [
+  { month: "Jan", appointments: 120, utilization: 75, revenue: 15000 },
+  { month: "Feb", appointments: 135, utilization: 78, revenue: 16500 },
+  { month: "Mar", appointments: 150, utilization: 82, revenue: 18000 },
+  { month: "Apr", appointments: 165, utilization: 85, revenue: 19500 },
+  { month: "May", appointments: 180, utilization: 88, revenue: 21000 },
+  { month: "Jun", appointments: 195, utilization: 90, revenue: 22500 },
+]
 
+export default function PerformanceAnalyticsPage() {
   return (
     <PageTemplate title="Performance Analytics" description="View performance metrics and insights for your clinic">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">

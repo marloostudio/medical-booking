@@ -18,6 +18,28 @@ const nextConfig = {
 
   // Empty experimental object - removed appDir
   experimental: {},
+
+  // Webpack configuration to handle Node.js polyfills
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      // Ensure these Node.js modules are not included in client-side bundles
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+        crypto: false,
+        stream: false,
+        http: false,
+        https: false,
+        zlib: false,
+        path: false,
+        os: false,
+        util: false,
+      }
+    }
+    return config
+  },
 }
 
 module.exports = nextConfig
