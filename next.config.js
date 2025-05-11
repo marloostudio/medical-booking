@@ -10,8 +10,10 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // Add allowedDevOrigins to fix cross-origin warning
-  allowedDevOrigins: ["http://localhost:3000", "http://192.168.5.172:3000"],
+  // Fix for cross-origin requests
+  experimental: {
+    allowedDevOrigins: ["localhost:3000", "192.168.5.172:3000"],
+  },
   // Simplified webpack config without crypto-browserify
   webpack: (config) => {
     config.resolve.fallback = {
