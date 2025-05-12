@@ -1,77 +1,34 @@
 "use client"
 
-import * as React from "react"
-import { Tooltip, TooltipProvider } from "@/components/ui/tooltip"
+import type React from "react"
+import { Tooltip as RechartsTooltip, type TooltipProps } from "recharts"
 
-interface ChartConfig {
-  [key: string]: {
-    label: string
-    color: string
-  }
+export function ChartTooltip({ content, ...props }: TooltipProps<any, any>) {
+  return <RechartsTooltip content={content} {...props} />
 }
 
-interface ChartContainerProps {
-  children: React.ReactNode
-  config: ChartConfig
-}
-
-export function ChartContainer({ children, config }: ChartContainerProps) {
-  // Create CSS variables for chart colors
-  const style = Object.entries(config).reduce(
-    (acc, [key, value]) => {
-      acc[`--color-${key}`] = value.color
-      return acc
-    },
-    {} as Record<string, string>,
-  )
-
-  return <div style={style}>{children}</div>
-}
-
-interface ChartTooltipProps {
-  active?: boolean
-  payload?: Array<{
-    name: string
-    value: number
-    dataKey: string
-  }>
-  label?: string
-  config?: ChartConfig
-}
-
-export function ChartTooltipContent({ active, payload, label, config }: ChartTooltipProps) {
+export function ChartTooltipContent({ active, payload, label }: any) {
   if (!active || !payload || !payload.length) {
     return null
   }
 
   return (
     <div className="rounded-lg border bg-background p-2 shadow-sm">
-      <div className="grid grid-cols-2 gap-2">
-        <div className="font-medium">{label}</div>
-        <div className="font-medium text-right"></div>
-        {payload.map((entry) => (
-          <React.Fragment key={entry.dataKey}>
-            <div className="flex items-center gap-1">
-              <div
-                className="h-2 w-2 rounded-full"
-                style={{
-                  backgroundColor: config?.[entry.dataKey]?.color || "currentColor",
-                }}
-              />
-              <div>{config?.[entry.dataKey]?.label || entry.name}</div>
-            </div>
-            <div className="text-right">{entry.value}</div>
-          </React.Fragment>
-        ))}
-      </div>
+      <div className="font-medium">{label}</div>
+      {payload.map((item: any, index: number) => (
+        <div key={`item-${index}`} className="flex items-center justify-between gap-2 text-sm">
+          <div className="flex items-center gap-1">
+            <div className="h-2 w-2 rounded-full" style={{ backgroundColor: item.color }} />
+            <span>{item.name}</span>
+          </div>
+          <div>{item.value}</div>
+        </div>
+      ))}
     </div>
   )
 }
 
-export function ChartTooltip(props: React.ComponentProps<typeof Tooltip>) {
-  return (
-    <TooltipProvider>
-      <Tooltip {...props} />
-    </TooltipProvider>
-  )
+export function ChartContainer({ children, config }: { children: React.ReactNode; config?: any }) {
+  // Apply any configuration to the children
+  return <>{children}</>
 }

@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Download, Calendar, UserX, X } from "lucide-react"
 import { Line, LineChart, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer, BarChart, Bar } from "recharts"
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 
 export default function AppointmentReportsPage() {
   // Sample data for charts
@@ -123,40 +122,29 @@ export default function AppointmentReportsPage() {
             </CardHeader>
             <CardContent>
               <div className="h-[400px]">
-                <ChartContainer
-                  config={{
-                    appointments: {
-                      label: "Total Appointments",
-                      color: "hsl(var(--chart-1))",
-                    },
-                    noShows: {
-                      label: "No-Shows",
-                      color: "hsl(var(--chart-2))",
-                    },
-                    cancellations: {
-                      label: "Cancellations",
-                      color: "hsl(var(--chart-3))",
-                    },
-                  }}
-                >
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={appointmentData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="month" />
-                      <YAxis />
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                      <Legend />
-                      <Line type="monotone" dataKey="appointments" stroke="var(--color-appointments)" strokeWidth={2} />
-                      <Line type="monotone" dataKey="noShows" stroke="var(--color-noShows)" strokeWidth={2} />
-                      <Line
-                        type="monotone"
-                        dataKey="cancellations"
-                        stroke="var(--color-cancellations)"
-                        strokeWidth={2}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </ChartContainer>
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={appointmentData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" />
+                    <YAxis />
+                    <Legend />
+                    <Line
+                      type="monotone"
+                      dataKey="appointments"
+                      stroke="#3b82f6"
+                      strokeWidth={2}
+                      name="Total Appointments"
+                    />
+                    <Line type="monotone" dataKey="noShows" stroke="#ef4444" strokeWidth={2} name="No-Shows" />
+                    <Line
+                      type="monotone"
+                      dataKey="cancellations"
+                      stroke="#f97316"
+                      strokeWidth={2}
+                      name="Cancellations"
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
               </div>
             </CardContent>
           </Card>
@@ -168,24 +156,14 @@ export default function AppointmentReportsPage() {
             </CardHeader>
             <CardContent>
               <div className="h-[300px]">
-                <ChartContainer
-                  config={{
-                    count: {
-                      label: "Appointment Count",
-                      color: "hsl(var(--chart-1))",
-                    },
-                  }}
-                >
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={timeSlotData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="time" />
-                      <YAxis />
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                      <Bar dataKey="count" fill="var(--color-count)" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </ChartContainer>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={timeSlotData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="time" />
+                    <YAxis />
+                    <Bar dataKey="count" fill="#3b82f6" name="Appointment Count" />
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
             </CardContent>
           </Card>
