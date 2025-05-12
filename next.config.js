@@ -19,6 +19,12 @@ const nextConfig = {
         },
       }
     : {}),
+  // Ensure SWC is used for compilation
+  swcMinify: true,
+  compiler: {
+    // Enables the styled-components SWC transform
+    styledComponents: true,
+  },
   // Simplified webpack config without crypto-browserify
   webpack: (config) => {
     config.resolve.fallback = {
