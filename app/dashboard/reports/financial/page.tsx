@@ -1,9 +1,10 @@
-import { PageTemplate } from "@/components/dashboard/page-template"
+"use client"
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer } from "recharts"
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer, Tooltip } from "recharts"
 
 export default function FinancialReportsPage() {
   // Sample data - would normally come from your database
@@ -17,7 +18,12 @@ export default function FinancialReportsPage() {
   ]
 
   return (
-    <PageTemplate title="Financial Reports" description="Generate and view financial reports for your clinic">
+    <div className="container mx-auto p-6">
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold">Financial Reports</h1>
+        <p className="text-muted-foreground">Generate and view financial reports for your clinic</p>
+      </div>
+
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
         <div className="flex flex-wrap gap-2">
           <Select>
@@ -95,6 +101,7 @@ export default function FinancialReportsPage() {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
                     <YAxis />
+                    <Tooltip />
                     <Legend />
                     <Bar dataKey="revenue" fill="#3b82f6" name="Revenue" />
                     <Bar dataKey="expenses" fill="#ef4444" name="Expenses" />
@@ -141,6 +148,6 @@ export default function FinancialReportsPage() {
           </Card>
         </TabsContent>
       </Tabs>
-    </PageTemplate>
+    </div>
   )
 }
