@@ -1,7 +1,5 @@
 {
-  "buildCommand": "node debug-build.js",
-  "devCommand": "next dev",
-  "installCommand": "npm install",
-  "framework": "nextjs",
-  "outputDirectory": ".next"
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install"
 }

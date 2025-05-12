@@ -1,24 +1,18 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Disable strict mode to avoid potential issues
-  reactStrictMode: false,
-  // Ignore ESLint and TypeScript errors during build
+  reactStrictMode: true,
+  swcMinify: true,
+  images: {
+    domains: ["thebookinglink.com", "v0-medical-booking.vercel.app"],
+    unoptimized: true,
+  },
   eslint: {
     ignoreDuringBuilds: true,
   },
   typescript: {
     ignoreBuildErrors: true,
   },
-  // Disable image optimization to avoid potential issues
-  images: {
-    unoptimized: true,
-  },
-  // Disable experimental features
-  experimental: {},
-  // Disable webpack customization
-  webpack: undefined,
-  // Ensure SWC is used
-  swcMinify: true,
+  // No custom webpack config to avoid potential issues
 }
 
 module.exports = nextConfig
