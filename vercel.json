@@ -1,7 +1,10 @@
 {
   "version": 2,
-  "buildCommand": "pnpm run build",
-  "installCommand": "pnpm install",
+  "buildCommand": "npm run vercel-build",
+  "installCommand": "npm install",
   "framework": "nextjs",
-  "outputDirectory": ".next"
+  "outputDirectory": ".next",
+  "env": {
+    "NEXT_TELEMETRY_DISABLED": "1"
+  }
 }

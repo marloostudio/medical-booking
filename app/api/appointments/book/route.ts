@@ -1,38 +1,29 @@
-import { NextResponse } from "next/server"
-import { parseISO } from "date-fns"
-import { appointmentService, type BookingRequest } from "@/services/appointment-service"
-import { notificationService } from "@/services/notification-service"
+import { type NextRequest, NextResponse } from "next/server"
+import { getCollection } from "@/lib/firebase-admin"
 
-export async function POST(request: Request) {
+// Set the runtime to nodejs to ensure Firebase Admin works correctly
+export const runtime = "nodejs"
+
+export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    const { clinicId, patientId, staffId, appointmentTypeId, startTime, patientNotes } = body
+    const data = await request.json()
 
-    if (!clinicId || !patientId || !staffId || !appointmentTypeId || !startTime) {
-      return NextResponse.json({ error: "Missing required booking information" }, { status: 400 })
+    // Validate the appointment data
+    if (!data || !data.patientId || !data.appointmentDate) {
+      return NextResponse.json({ error: "Invalid appointment data" }, { status: 400 })
     }
 
-    const bookingRequest: BookingRequest = {
-      clinicId,
-      patientId,
-      staffId,
-      appointmentTypeId,
-      startTime: parseISO(startTime),
-      patientNotes,
-    }
-
-    const result = await appointmentService.createAppointment(bookingRequest)
-
-    if (!result.success) {
-      return NextResponse.json({ error: result.message }, { status: 400 })
-    }
-
-    // Schedule reminders for the new appointment
-    await notificationService.scheduleAppointmentReminders(result.appointment)
+    // Create the appointment in Firestore
+    const appointmentsCollection = getCollection("appointments")
+    const result = await appointmentsCollection.add({
+      ...data,
+      createdAt: new Date().toISOString(),
+      status: "scheduled",
+    })
 
     return NextResponse.json({
       success: true,
-      appointment: result.appointment,
+      appointmentId: result.id,
     })
   } catch (error) {
     console.error("Error booking appointment:", error)

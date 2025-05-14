@@ -1,98 +1,96 @@
-import * as admin from "firebase-admin"
-import { getApps } from "firebase-admin/app"
-import { getFirestore, type CollectionReference, type DocumentReference } from "firebase-admin/firestore"
+import { getApps, initializeApp, cert, getApp } from "firebase-admin/app"
+import { getFirestore, type Firestore } from "firebase-admin/firestore"
+import { getAuth, type Auth } from "firebase-admin/auth"
 
-// Firebase Admin configuration
-const firebaseAdminConfig = {
-  credential: admin.credential.cert({
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-    // Replace escaped newlines in the private key
-    privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
-  }),
-  databaseURL: `https://${process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID}.firebaseio.com`,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+/**
+ * Formats the Firebase private key to ensure it has proper PEM format
+ */
+function formatPrivateKey(key: string | undefined): string | undefined {
+  if (!key) return undefined
+
+  // If the key already contains actual newlines, it's already formatted correctly
+  if (key.includes("\n") && key.startsWith("-----BEGIN PRIVATE KEY-----")) {
+    return key
+  }
+
+  // If the key has escaped newlines (\n), replace them with actual newlines
+  if (key.includes("\\n")) {
+    return key.replace(/\\n/g, "\n")
+  }
+
+  return key
 }
 
-// Initialize Firebase Admin (Singleton Pattern)
-export function initializeFirebaseAdmin(): admin.app.App {
+/**
+ * Singleton pattern for Firebase Admin initialization
+ */
+function getFirebaseAdmin(): { db: Firestore; auth: Auth } {
   try {
     // Check if Firebase Admin is already initialized
-    if (!getApps().length) {
-      admin.initializeApp(firebaseAdminConfig)
-      console.log("Firebase Admin initialized successfully")
-    } else {
-      console.log("Firebase Admin already initialized")
+    const apps = getApps()
+
+    if (apps.length > 0) {
+      // If already initialized, return the existing app
+      const app = getApp()
+      return {
+        db: getFirestore(app),
+        auth: getAuth(app),
+      }
     }
-    return admin.app()
+
+    // Get environment variables
+    const projectId = process.env.GCLOUD_PROJECT || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    const clientEmail = process.env.FIREBASE_CLIENT_EMAIL
+    const privateKey = formatPrivateKey(process.env.FIREBASE_PRIVATE_KEY)
+
+    // Validate required credentials
+    if (!projectId || !clientEmail || !privateKey) {
+      throw new Error(
+        `Firebase Admin initialization failed. Missing required credentials:
+        ${!projectId ? "GCLOUD_PROJECT or NEXT_PUBLIC_FIREBASE_PROJECT_ID" : ""}
+        ${!clientEmail ? "FIREBASE_CLIENT_EMAIL" : ""}
+        ${!privateKey ? "FIREBASE_PRIVATE_KEY" : ""}`,
+      )
+    }
+
+    // Initialize Firebase Admin
+    const app = initializeApp({
+      credential: cert({
+        projectId,
+        clientEmail,
+        privateKey,
+      }),
+    })
+
+    console.log("Firebase Admin initialized successfully")
+
+    return {
+      db: getFirestore(app),
+      auth: getAuth(app),
+    }
   } catch (error) {
-    console.error("Error initializing Firebase Admin:", error)
+    console.error("Firebase Admin initialization error:", error)
     throw error
   }
 }
 
-// Get Firestore instance (Singleton Pattern)
-export const adminDb = (() => {
-  try {
-    initializeFirebaseAdmin()
-    return getFirestore()
-  } catch (error) {
-    console.error("Error getting Firestore instance:", error)
-    throw error
-  }
-})()
+// Export the Firebase Admin instances
+export const { db: adminDb, auth: adminAuth } = getFirebaseAdmin()
 
-// Get Firebase Auth instance
-export const adminAuth = (() => {
-  try {
-    initializeFirebaseAdmin()
-    return admin.auth()
-  } catch (error) {
-    console.error("Error getting Firebase Auth instance:", error)
-    throw error
-  }
-})()
-
-// Get a Firestore collection reference - FIXED to use adminDb.collection directly
-export function getCollection(collectionPath: string): CollectionReference {
-  try {
-    if (!collectionPath || typeof collectionPath !== "string") {
-      throw new Error(`Invalid collection path: ${collectionPath}`)
-    }
-
-    // Ensure Firestore is initialized
-    if (!adminDb) {
-      throw new Error("Firestore is not initialized")
-    }
-
-    // Use adminDb.collection directly as requested
-    return adminDb.collection(collectionPath)
-  } catch (error) {
-    console.error(`Error getting collection '${collectionPath}':`, error)
-    throw error
-  }
+/**
+ * Helper function to get a Firestore collection reference
+ */
+export function getCollection(collectionPath: string) {
+  return adminDb.collection(collectionPath)
 }
 
-// Get a Firestore document reference
-export function getDocument(collectionPath: string, documentId: string): DocumentReference {
-  try {
-    if (!collectionPath || typeof collectionPath !== "string") {
-      throw new Error(`Invalid collection path: ${collectionPath}`)
-    }
+/**
+ * Helper function to get a Firestore document reference
+ */
+export function getDocument(collectionPath: string, documentId: string) {
+  return adminDb.collection(collectionPath).doc(documentId)
+}
 
-    if (!documentId || typeof documentId !== "string") {
-      throw new Error(`Invalid document ID: ${documentId}`)
-    }
-
-    // Ensure Firestore is initialized
-    if (!adminDb) {
-      throw new Error("Firestore is not initialized")
-    }
-
-    // Get the document reference
-    return adminDb.collection(collectionPath).doc(documentId)
-  } catch (error) {
-    console.error(`Error getting document '${documentId}' from collection '${collectionPath}':`, error)
-    throw error
-  }
+export function initializeFirebaseAdmin() {
+  return getFirebaseAdmin()
 }
