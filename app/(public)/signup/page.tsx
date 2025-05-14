@@ -1,6 +1,11 @@
 import { Suspense } from "react"
 import SignupContent from "./signup-content"
 
+// Set runtime to node instead of edge
+export const config = {
+  runtime: "nodejs",
+}
+
 export default function SignupPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4">

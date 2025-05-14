@@ -1,4 +1,5 @@
 "use client"
+
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -13,6 +14,11 @@ import { createUserWithEmailAndPassword } from "firebase/auth"
 import { collection, query, where, getDocs, doc, setDoc, serverTimestamp } from "firebase/firestore"
 import { EnhancedAddressInput } from "@/components/ui/enhanced-address-input"
 
+// Set runtime to node instead of edge
+export const config = {
+  runtime: "nodejs",
+}
+
 // Simple default export as recommended by Next.js
 export default function SignupContent() {
   const [isLoading, setIsLoading] = useState(false)
@@ -22,6 +28,7 @@ export default function SignupContent() {
   const [clinicName, setClinicName] = useState("")
   const [fullName, setFullName] = useState("")
   const [phone, setPhone] = useState("")
+  // Initialize with default values to prevent undefined properties
   const [address, setAddress] = useState({
     street: "",
     unit: "",
@@ -123,22 +130,22 @@ export default function SignupContent() {
       // Generate a unique clinic ID
       const clinicId = `clinic_${Date.now()}`
 
-      // Create the clinic document
+      // Create the clinic document with safe property access
+      // FIXED: Added null/undefined checks for address properties
       await setDoc(doc(db, "clinics", clinicId), {
-        name: clinicName,
+        name: clinicName || "",
         owner: user.uid,
-        email: email,
-        phone: phone,
-        address: address
-          ? {
-              street: address.street || "",
-              unit: address.unit || "",
-              city: address.city || "",
-              state: address.state || "",
-              zipCode: address.zipCode || "",
-              country: address.country || "United States",
-            }
-          : {},
+        email: email || "",
+        phone: phone || "",
+        address: {
+          // Use optional chaining and nullish coalescing for safe property access
+          street: address?.street || "",
+          unit: address?.unit || "",
+          city: address?.city || "",
+          state: address?.state || "",
+          zipCode: address?.zipCode || "",
+          country: address?.country || "United States",
+        },
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
         status: "active",
@@ -161,8 +168,8 @@ export default function SignupContent() {
 
       // Create the user profile
       await setDoc(doc(db, "users", user.uid), {
-        email: email,
-        displayName: fullName,
+        email: email || "",
+        displayName: fullName || "",
         clinicId: clinicId,
         role: "CLINIC_OWNER",
         createdAt: serverTimestamp(),
@@ -175,9 +182,9 @@ export default function SignupContent() {
       // Create a staff record
       await setDoc(doc(db, "staff", user.uid), {
         clinicId: clinicId,
-        name: fullName,
-        email: email,
-        phone: phone,
+        name: fullName || "",
+        email: email || "",
+        phone: phone || "",
         role: "CLINIC_OWNER",
         permissions: ["all"],
         createdAt: serverTimestamp(),
@@ -341,7 +348,20 @@ export default function SignupContent() {
 
                 <div className="space-y-2">
                   <Label>Clinic Address</Label>
-                  <EnhancedAddressInput address={address} setAddress={setAddress} />
+                  {/* Pass default address to prevent undefined properties */}
+                  <EnhancedAddressInput
+                    address={
+                      address || {
+                        street: "",
+                        unit: "",
+                        city: "",
+                        state: "",
+                        zipCode: "",
+                        country: "United States",
+                      }
+                    }
+                    setAddress={setAddress}
+                  />
                 </div>
               </div>
             </div>
