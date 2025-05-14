@@ -1,16 +1,7 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
-  "installCommand": "npm install",
+  "buildCommand": "pnpm run build",
+  "installCommand": "pnpm install",
   "framework": "nextjs",
-  "env": {
-    "NEXT_PUBLIC_APP_ENV": "production",
-    "NEXT_PUBLIC_SITE_URL": "https://bookinglink.app"
-  },
-  "crons": [
-    {
-      "path": "/api/cron/process-reminders?token=$BACKUP_SECRET_TOKEN",
-      "schedule": "0 */1 * * *"
-    }
-  ]
+  "outputDirectory": ".next"
 }

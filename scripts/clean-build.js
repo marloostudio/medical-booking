@@ -34,7 +34,7 @@ try {
 // Install dependencies
 console.log("Installing dependencies...")
 try {
-  execSync("npm install", { stdio: "inherit" })
+  execSync("pnpm install", { stdio: "inherit" })
   console.log("Dependencies installed")
 } catch (error) {
   console.error("Error installing dependencies:", error)
@@ -44,7 +44,7 @@ try {
 // Build the project
 console.log("Building the project...")
 try {
-  execSync("npm run build", { stdio: "inherit" })
+  execSync("pnpm run build", { stdio: "inherit" })
   console.log("Build completed successfully")
 } catch (error) {
   console.error("Error building the project:", error)
