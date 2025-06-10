@@ -1,4 +1,5 @@
-import { getServerSession } from "next-auth/next"
+import "server-only"
+import { getServerSession } from "next-auth"
 import { type NextRequest, NextResponse } from "next/server"
 import { redirect } from "next/navigation"
 import { hasPermission, type PermissionAction, type ResourceType } from "./permissions"
@@ -8,8 +9,18 @@ import type { UserRole } from "./role-permissions"
 export async function requireAuth() {
   const session = await getServerSession()
 
-  if (!session) {
-    redirect("/login?error=unauthorized")
+  if (!session?.user) {
+    redirect("/login")
+  }
+
+  return session
+}
+
+export async function requireRole(allowedRoles: string[]) {
+  const session = await requireAuth()
+
+  if (!allowedRoles.includes(session.user.role)) {
+    redirect("/dashboard")
   }
 
   return session
